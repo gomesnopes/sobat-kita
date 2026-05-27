@@ -10,7 +10,6 @@
 </head>
 <body class="text-slate-800 min-h-screen flex overflow-hidden">
     
-    <!-- Sidebar / Navigasi Tabs -->
     <aside class="w-64 bg-white shadow-md z-20 flex flex-col h-screen">
         <div class="p-6 border-b border-slate-100">
             <h1 class="text-2xl font-bold text-green-700">MedLogix</h1>
@@ -29,16 +28,17 @@
         </nav>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
         
-        <!-- Header & Search -->
         <header class="bg-white px-8 py-4 border-b border-slate-200 flex justify-between items-center shadow-sm z-10">
             <div class="flex items-center w-96 bg-slate-100 rounded-full px-4 py-2 border border-slate-200 focus-within:border-green-500 focus-within:bg-white transition-all">
                 <span class="material-symbols-outlined text-slate-400 mr-2 text-xl">search</span>
-                <input id="searchInput" class="bg-transparent border-none focus:ring-0 w-full text-sm outline-none" placeholder="Cari No. Resep, Pasien, atau Alamat..." type="text"/>
+                <input id="searchInput" class="bg-transparent border-none focus:ring-0 w-full text-sm outline-none" placeholder="Cari No. Resep, Pasien..." type="text"/>
             </div>
             <div class="flex gap-4">
+                <button id="btn-add-fee" class="hidden bg-slate-800 text-white px-4 py-2 rounded-lg font-bold hover:bg-slate-700 flex items-center gap-2">
+                    <span class="material-symbols-outlined">add_location</span> Tambah Kelurahan
+                </button>
                 <button id="btn-add-courier" class="hidden bg-slate-800 text-white px-4 py-2 rounded-lg font-bold hover:bg-slate-700 flex items-center gap-2">
                     <span class="material-symbols-outlined">person_add</span> Tambah Kurir
                 </button>
@@ -48,7 +48,6 @@
             </div>
         </header>
 
-        <!-- TAB 1: ORDERS (PENGANTARAN) -->
         <div id="tab-orders" class="tab-content flex-1 p-8 overflow-y-auto">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200">
                 <table class="w-full text-left border-collapse">
@@ -65,7 +64,6 @@
             </div>
         </div>
 
-        <!-- TAB 2: COURIERS -->
         <div id="tab-couriers" class="tab-content hidden flex-1 p-8 overflow-y-auto bg-slate-50">
             <h2 class="text-2xl font-bold mb-4">Daftar Mitra Kurir</h2>
             <div class="bg-white rounded-xl shadow-sm border border-slate-200">
@@ -83,7 +81,6 @@
             </div>
         </div>
 
-        <!-- TAB 3: FEES (ONGKIR) -->
         <div id="tab-fees" class="tab-content hidden flex-1 p-8 overflow-y-auto bg-slate-50">
             <h2 class="text-2xl font-bold mb-4">Tarif Kelurahan Kota Ternate</h2>
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 max-w-2xl">
@@ -101,14 +98,12 @@
         </div>
     </main>
 
-    <!-- MODAL: FORM PENGANTARAN BARU -->
     <div id="dispatchModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl max-w-lg w-full shadow-2xl flex flex-col max-h-[90vh]">
             <div class="p-6 border-b flex justify-between items-center">
                 <h3 class="text-xl font-bold text-green-700">Buat Pengantaran Baru</h3>
                 <button class="close-modal material-symbols-outlined text-slate-400 hover:text-red-500">close</button>
             </div>
-            
             <div class="p-6 overflow-y-auto flex-1">
                 <form id="dispatchForm" class="space-y-4">
                     <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
@@ -120,7 +115,6 @@
                             <span class="material-symbols-outlined text-[16px]">add_circle</span> Tambah Obat Lain
                         </button>
                     </div>
-
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Nama Pasien</label>
@@ -131,9 +125,8 @@
                             <input type="text" id="no_whatsapp" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border">
                         </div>
                     </div>
-
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Kelurahan Tujuan (Ternate)</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kelurahan Tujuan</label>
                         <select id="kelurahan_select" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border bg-white">
                             <option value="">Memuat data kelurahan...</option>
                         </select>
@@ -142,12 +135,8 @@
                         <label class="block text-xs font-bold text-slate-700 mb-1">Detail Alamat</label>
                         <textarea id="alamat" rows="2" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border"></textarea>
                     </div>
-
-                    <button type="submit" class="w-full bg-green-700 text-white py-3 rounded-lg font-bold hover:bg-green-800 shadow-md">
-                        Simpan & Buat QR
-                    </button>
+                    <button type="submit" class="w-full bg-green-700 text-white py-3 rounded-lg font-bold hover:bg-green-800 shadow-md">Simpan & Buat QR</button>
                 </form>
-
                 <div id="qrContainer" class="hidden flex flex-col items-center py-6">
                     <div class="bg-green-50 p-4 rounded-xl border border-green-200 text-center w-full mb-4">
                         <p class="font-bold text-green-800">Berhasil Dibuat!</p>
@@ -159,7 +148,50 @@
         </div>
     </div>
 
-    <!-- MODAL: EDIT STATUS & VIEW QR -->
+    <div id="addCourierModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl w-96 shadow-2xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">Tambah Mitra Kurir</h3>
+                <button class="close-modal material-symbols-outlined text-slate-400 hover:text-red-500">close</button>
+            </div>
+            <form id="addCourierForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Kurir</label>
+                    <input type="text" id="courier_name" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">No. WhatsApp (62...)</label>
+                    <input type="text" id="courier_wa" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border">
+                </div>
+                <button type="submit" class="w-full bg-slate-800 text-white py-2 rounded-lg font-bold hover:bg-slate-700">Simpan Kurir</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addFeeModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl w-96 shadow-2xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">Tambah Kelurahan</h3>
+                <button class="close-modal material-symbols-outlined text-slate-400 hover:text-red-500">close</button>
+            </div>
+            <form id="addFeeForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Kecamatan (Contoh: Ternate Tengah)</label>
+                    <input type="text" id="fee_kecamatan" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Kelurahan</label>
+                    <input type="text" id="fee_kelurahan" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tarif Ongkir (Rp)</label>
+                    <input type="number" id="fee_tarif" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border">
+                </div>
+                <button type="submit" class="w-full bg-slate-800 text-white py-2 rounded-lg font-bold hover:bg-slate-700">Simpan Tarif</button>
+            </form>
+        </div>
+    </div>
+
     <div id="actionModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl w-96 shadow-2xl p-6 text-center">
             <h3 class="text-lg font-bold mb-4">Aksi Pengantaran</h3>
@@ -178,12 +210,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <script type="module">
-      import { supabase } from './js/supabase-config.js';
+        // IMPORT CONFIG SUPABASE
+        import { supabase } from './js/supabase-config.js';
 
-        // --- MANAJEMEN TAB ---
+        // --- MANAJEMEN TAB & HEADER ---
         const tabs = ['orders', 'couriers', 'fees'];
         tabs.forEach(tab => {
             document.getElementById(`nav-${tab}`).addEventListener('click', (e) => {
+                // Styling active tab
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.classList.remove('bg-green-50', 'text-green-700');
                     btn.classList.add('text-slate-600');
@@ -191,18 +225,23 @@
                 e.currentTarget.classList.remove('text-slate-600');
                 e.currentTarget.classList.add('bg-green-50', 'text-green-700');
 
+                // Switch Content
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
                 document.getElementById(`tab-${tab}`).classList.remove('hidden');
 
+                // Toggle Header Buttons
                 document.getElementById('btn-new-dispatch').classList.toggle('hidden', tab !== 'orders');
                 document.getElementById('btn-add-courier').classList.toggle('hidden', tab !== 'couriers');
+                document.getElementById('btn-add-fee').classList.toggle('hidden', tab !== 'fees');
             });
         });
 
-        // --- FITUR MODAL ---
+        // --- MANAJEMEN BUKA-TUTUP MODAL ---
         document.querySelectorAll('.close-modal').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.getElementById('dispatchModal').classList.add('hidden');
+                document.getElementById('addCourierModal').classList.add('hidden');
+                document.getElementById('addFeeModal').classList.add('hidden');
                 document.getElementById('actionModal').classList.add('hidden');
             });
         });
@@ -212,29 +251,71 @@
             document.getElementById('dispatchForm').classList.remove('hidden');
             document.getElementById('qrContainer').classList.add('hidden');
             document.getElementById('dispatchForm').reset();
-            document.getElementById('resep-container').innerHTML = `<input type="text" name="resep[]" placeholder="Contoh: RES-001" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm focus:border-green-500 outline-none border">`;
+            document.getElementById('resep-container').innerHTML = `<input type="text" name="resep[]" placeholder="Contoh: RES-001" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border">`;
         });
 
+        document.getElementById('btn-add-courier').addEventListener('click', () => {
+            document.getElementById('addCourierModal').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-add-fee').addEventListener('click', () => {
+            document.getElementById('addFeeModal').classList.remove('hidden');
+        });
+
+        // Tambah Input Resep Dinamis
         document.getElementById('btn-tambah-resep').addEventListener('click', () => {
             const input = document.createElement('input');
-            input.type = 'text';
-            input.name = 'resep[]';
-            input.placeholder = 'No. Resep Tambahan';
-            input.className = 'w-full rounded-md border-slate-300 px-3 py-2 text-sm focus:border-green-500 outline-none border mt-2';
+            input.type = 'text'; input.name = 'resep[]'; input.placeholder = 'No. Resep Tambahan';
+            input.className = 'w-full rounded-md border-slate-300 px-3 py-2 text-sm border mt-2';
             document.getElementById('resep-container').appendChild(input);
         });
 
-        // --- FITUR SEARCH ---
+        // --- SUBMIT FORM TAMBAH KURIR ---
+        document.getElementById('addCourierForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                nama_kurir: document.getElementById('courier_name').value,
+                no_whatsapp: document.getElementById('courier_wa').value,
+                status: 'Tersedia'
+            };
+            const { error } = await supabase.from('couriers').insert([payload]);
+            if (error) {
+                alert('Gagal tambah kurir: ' + error.message);
+            } else {
+                document.getElementById('addCourierModal').classList.add('hidden');
+                document.getElementById('addCourierForm').reset();
+                loadCouriers();
+            }
+        });
+
+        // --- SUBMIT FORM TAMBAH KELURAHAN ---
+        document.getElementById('addFeeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                kecamatan: document.getElementById('fee_kecamatan').value,
+                nama_kelurahan: document.getElementById('fee_kelurahan').value,
+                tarif: parseInt(document.getElementById('fee_tarif').value)
+            };
+            const { error } = await supabase.from('kelurahan_fees').insert([payload]);
+            if (error) {
+                alert('Gagal tambah tarif: ' + error.message);
+            } else {
+                document.getElementById('addFeeModal').classList.add('hidden');
+                document.getElementById('addFeeForm').reset();
+                loadFees();
+            }
+        });
+
+        // --- SEARCH ---
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('#order-table-body tr');
             rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(keyword) ? '' : 'none';
+                row.style.display = row.innerText.toLowerCase().includes(keyword) ? '' : 'none';
             });
         });
 
-        // --- FUNGSI LOAD DATA SUPABASE ---
+        // --- LOAD DATA SUPABASE ---
         async function loadFees() {
             const { data } = await supabase.from('kelurahan_fees').select('*').order('kecamatan');
             const tbody = document.getElementById('fee-table-body');
@@ -274,13 +355,11 @@
 
                     tbody.innerHTML += `
                         <tr class="border-b border-slate-100 hover:bg-slate-50">
-                            <td class="px-4 py-3"><p class="font-bold text-green-700 max-w-[150px]">${order.order_numbers}</p><p class="font-medium">${order.patient_name}</p></td>
+                            <td class="px-4 py-3"><p class="font-bold text-green-700">${order.order_numbers}</p><p class="font-medium">${order.patient_name}</p></td>
                             <td class="px-4 py-3"><p class="font-bold">${order.kelurahan}</p><p class="text-xs text-slate-500 truncate max-w-[200px]">${order.dropoff_address}</p><p class="text-xs font-bold text-amber-600 mt-1">Ongkir: Rp ${order.tarif.toLocaleString()}</p></td>
                             <td class="px-4 py-3"><div class="mb-1">${badge}</div><p class="text-xs font-bold text-slate-600">${order.courier_name || 'Belum Diambil'}</p></td>
                             <td class="px-4 py-3 text-right">
-                                <button onclick="window.openActionModal('${order.id}')" class="text-slate-400 hover:text-green-600 p-1 bg-slate-100 rounded">
-                                    <span class="material-symbols-outlined">qr_code_2</span>
-                                </button>
+                                <button onclick="window.openActionModal('${order.id}')" class="text-slate-400 hover:text-green-600 p-1 bg-slate-100 rounded"><span class="material-symbols-outlined">qr_code_2</span></button>
                             </td>
                         </tr>
                     `;
@@ -288,7 +367,7 @@
             }
         }
 
-        // --- SUBMIT PENGANTARAN ---
+        // --- SUBMIT PENGANTARAN UTAMA ---
         document.getElementById('dispatchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
