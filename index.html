@@ -178,13 +178,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <script type="module">
-        // IMPORT LANGSUNG DARI CDN (Anti Gagal)
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+       import { supabase } from './js/supabase-config.js';
 
-        // MASUKKAN KREDENSIAL SUPABASE ANDA DI SINI
-        const supabaseUrl = 'https://URL_SUPABASE_ANDA.supabase.co';
-        const supabaseKey = 'ANON_KEY_ANDA';
-        const supabase = createClient(supabaseUrl, supabaseKey);
+    
 
         // --- MANAJEMEN TAB ---
         const tabs = ['orders', 'couriers', 'fees'];
