@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>MedLogix Admin - Ternate</title>
+    <title>Sobat Kita - Admin Ternate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <style> body { font-family: sans-serif; background-color: #f8f9ff; } </style>
@@ -12,7 +12,7 @@
     
     <aside class="w-64 bg-white shadow-md z-20 flex flex-col h-screen">
         <div class="p-6 border-b border-slate-100">
-            <h1 class="text-2xl font-bold text-green-700">MedLogix</h1>
+            <h1 class="text-2xl font-bold text-green-700">Sobat Kita</h1>
             <p class="text-xs text-slate-500">Logistik Apotek Ternate</p>
         </div>
         <nav class="p-4 space-y-2 flex-1">
@@ -60,11 +60,34 @@
 
         <div id="tab-couriers" class="tab-content hidden flex-1 p-8 overflow-y-auto bg-slate-50">
             <h2 class="text-2xl font-bold mb-4">Daftar Mitra Kurir</h2>
-            <div class="bg-white rounded-xl shadow-sm border"><table class="w-full text-left"><tbody id="courier-table-body" class="text-sm"></tbody></table></div>
+            <div class="bg-white rounded-xl shadow-sm border">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b">
+                        <tr>
+                            <th class="px-4 py-3 text-xs text-slate-500">NAMA KURIR</th>
+                            <th class="px-4 py-3 text-xs text-slate-500">KONTAK</th>
+                            <th class="px-4 py-3 text-xs text-slate-500">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="courier-table-body" class="text-sm"></tbody>
+                </table>
+            </div>
         </div>
+
         <div id="tab-fees" class="tab-content hidden flex-1 p-8 overflow-y-auto bg-slate-50">
             <h2 class="text-2xl font-bold mb-4">Tarif Kelurahan</h2>
-            <div class="bg-white rounded-xl shadow-sm border max-w-2xl"><table class="w-full text-left"><tbody id="fee-table-body" class="text-sm"></tbody></table></div>
+            <div class="bg-white rounded-xl shadow-sm border max-w-2xl">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b">
+                        <tr>
+                            <th class="px-4 py-3 text-xs text-slate-500">KECAMATAN</th>
+                            <th class="px-4 py-3 text-xs text-slate-500">KELURAHAN</th>
+                            <th class="px-4 py-3 text-xs text-slate-500">TARIF (RP)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fee-table-body" class="text-sm"></tbody>
+                </table>
+            </div>
         </div>
     </main>
 
@@ -77,21 +100,12 @@
             <div class="p-6 overflow-y-auto flex-1">
                 <form id="dispatchForm" class="space-y-4">
                     <div class="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                        <label class="block text-sm font-bold text-slate-700 mb-1">Pilih Wilayah Tujuan (Berlaku untuk semua pasien di bawah)</label>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Pilih Wilayah Tujuan</label>
                         <select id="kelurahan_select" required class="w-full rounded-md border-slate-300 px-3 py-2 border bg-white font-bold"></select>
                     </div>
 
                     <div id="patients-container" class="space-y-4">
-                        <div class="patient-block p-4 border border-slate-300 rounded-lg bg-slate-50">
-                            <p class="font-bold text-green-700 mb-3 border-b pb-1">Pasien 1</p>
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <input type="text" name="resep[]" placeholder="No. Resep" required class="w-full rounded border px-3 py-2 text-sm">
-                                <input type="text" name="nama[]" placeholder="Nama Pasien" required class="w-full rounded border px-3 py-2 text-sm">
-                            </div>
-                            <input type="text" name="wa[]" placeholder="No WhatsApp (62...)" required class="w-full rounded border px-3 py-2 text-sm mb-3">
-                            <textarea name="alamat[]" rows="2" placeholder="Detail Patokan Alamat" required class="w-full rounded border px-3 py-2 text-sm"></textarea>
                         </div>
-                    </div>
 
                     <button type="button" id="btn-tambah-pasien" class="w-full py-2 border-2 border-dashed border-green-600 text-green-700 font-bold rounded-lg hover:bg-green-50">
                         + Tambah Pasien Lain (Di Kelurahan yang sama)
@@ -117,146 +131,6 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script type="module">
-        // ==========================================
-        // MENGAMBIL CONFIG DARI FILE EKSTERNAL
-        // ==========================================
-        import { supabase } from './js/supabase-config.js';
-        
-        // Navigasi Tab
-        const tabs = ['orders', 'couriers', 'fees'];
-        tabs.forEach(tab => {
-            document.getElementById(`nav-${tab}`).addEventListener('click', (e) => {
-                document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.remove('bg-green-50', 'text-green-700'); btn.classList.add('text-slate-600'); });
-                e.currentTarget.classList.remove('text-slate-600'); e.currentTarget.classList.add('bg-green-50', 'text-green-700');
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-                document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            });
-        });
-
-        document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', () => { document.getElementById('dispatchModal').classList.add('hidden'); document.getElementById('actionModal').classList.add('hidden'); }));
-
-        // Tombol Pengantaran Baru
-        document.getElementById('btn-new-dispatch').addEventListener('click', () => {
-            document.getElementById('dispatchModal').classList.remove('hidden');
-            document.getElementById('dispatchForm').classList.remove('hidden');
-            document.getElementById('qrContainer').classList.add('hidden');
-            document.getElementById('dispatchForm').reset();
-            document.getElementById('patients-container').innerHTML = `
-                <div class="patient-block p-4 border border-slate-300 rounded-lg bg-slate-50">
-                    <p class="font-bold text-green-700 mb-3 border-b pb-1">Pasien 1</p>
-                    <div class="grid grid-cols-2 gap-3 mb-3"><input type="text" name="resep[]" placeholder="No. Resep" required class="w-full rounded border px-3 py-2 text-sm"><input type="text" name="nama[]" placeholder="Nama Pasien" required class="w-full rounded border px-3 py-2 text-sm"></div>
-                    <input type="text" name="wa[]" placeholder="No WhatsApp (62...)" required class="w-full rounded border px-3 py-2 text-sm mb-3">
-                    <textarea name="alamat[]" rows="2" placeholder="Detail Patokan Alamat" required class="w-full rounded border px-3 py-2 text-sm"></textarea>
-                </div>
-            `;
-        });
-
-        // Tambah Pasien Dinamis
-        let patientCount = 1;
-        document.getElementById('btn-tambah-pasien').addEventListener('click', () => {
-            patientCount++;
-            const div = document.createElement('div');
-            div.className = "patient-block p-4 border border-slate-300 rounded-lg bg-slate-50 mt-4";
-            div.innerHTML = `
-                <p class="font-bold text-green-700 mb-3 border-b pb-1">Pasien ${patientCount}</p>
-                <div class="grid grid-cols-2 gap-3 mb-3"><input type="text" name="resep[]" placeholder="No. Resep" required class="w-full rounded border px-3 py-2 text-sm"><input type="text" name="nama[]" placeholder="Nama Pasien" required class="w-full rounded border px-3 py-2 text-sm"></div>
-                <input type="text" name="wa[]" placeholder="No WhatsApp (62...)" required class="w-full rounded border px-3 py-2 text-sm mb-3">
-                <textarea name="alamat[]" rows="2" placeholder="Detail Patokan Alamat" required class="w-full rounded border px-3 py-2 text-sm"></textarea>
-            `;
-            document.getElementById('patients-container').appendChild(div);
-        });
-
-        // FUNGSI LOAD
-        async function loadFees() {
-            const { data } = await supabase.from('kelurahan_fees').select('*').order('kecamatan');
-            const select = document.getElementById('kelurahan_select');
-            select.innerHTML = "<option value=''>Pilih Kelurahan...</option>";
-            if(data) {
-                data.forEach(fee => { select.innerHTML += `<option value="${fee.nama_kelurahan}|${fee.tarif}">${fee.kecamatan} - ${fee.nama_kelurahan} (Rp ${fee.tarif.toLocaleString()})</option>`; });
-            }
-        }
-        
-        async function loadOrders() {
-            const { data } = await supabase.from('deliveries').select('*').order('created_at', { ascending: false });
-            const tbody = document.getElementById('order-table-body');
-            tbody.innerHTML = "";
-            if(data) {
-                data.forEach(order => {
-                    let badge = `<span class="bg-slate-200 px-2 py-1 rounded text-xs font-bold">${order.status}</span>`;
-                    if(order.status === 'In Transit') badge = `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold">Diantar</span>`;
-                    if(order.status === 'Completed') badge = `<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">Selesai</span>`;
-
-                    tbody.innerHTML += `
-                        <tr class="border-b hover:bg-slate-50">
-                            <td class="px-4 py-3"><p class="text-[10px] font-mono text-slate-400">${order.batch_id}</p></td>
-                            <td class="px-4 py-3"><p class="font-bold text-green-700">${order.order_number}</p><p class="font-medium">${order.patient_name}</p></td>
-                            <td class="px-4 py-3"><p class="font-bold">${order.kelurahan}</p><p class="text-xs text-slate-500">${order.dropoff_address}</p></td>
-                            <td class="px-4 py-3"><div class="mb-1">${badge}</div><p class="text-xs font-bold">${order.courier_name || 'Belum Diambil'}</p></td>
-                            <td class="px-4 py-3 text-right"><button onclick="window.openActionModal('${order.batch_id}')" class="text-green-600 p-1 bg-slate-100 rounded">View QR</button></td>
-                        </tr>
-                    `;
-                });
-            }
-        }
-
-        // SUBMIT MULTI-PASIEN
-        document.getElementById('dispatchForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const [kelurahan, tarifStr] = document.getElementById('kelurahan_select').value.split("|");
-            
-            const reseps = document.querySelectorAll('input[name="resep[]"]');
-            const namas = document.querySelectorAll('input[name="nama[]"]');
-            const was = document.querySelectorAll('input[name="wa[]"]');
-            const alamats = document.querySelectorAll('textarea[name="alamat[]"]');
-            
-            const batchId = 'BCH-' + Math.floor(1000 + Math.random() * 9000);
-            
-            const { data: couriers } = await supabase.from('couriers').select('*').eq('status', 'Tersedia').order('last_assigned_at', { ascending: true }).limit(1);
-            let courierId = null, courierName = null, statusPengantaran = 'Pending', infoTeks = "Menunggu Kurir Scan Manual.";
-
-            if(couriers && couriers.length > 0) {
-                courierId = couriers[0].id; courierName = couriers[0].nama_kurir; statusPengantaran = 'In Transit';
-                infoTeks = `Rombongan ini ditugaskan ke Kurir: <b>${courierName}</b>`;
-                await supabase.from('couriers').update({ status: 'Sibuk', last_assigned_at: new Date().toISOString() }).eq('id', courierId);
-            }
-
-            let payloadArray = [];
-            for(let i=0; i<reseps.length; i++) {
-                payloadArray.push({
-                    batch_id: batchId,
-                    order_number: reseps[i].value,
-                    patient_name: namas[i].value,
-                    patient_phone: was[i].value,
-                    kelurahan: kelurahan,
-                    dropoff_address: alamats[i].value,
-                    tarif: parseInt(tarifStr),
-                    status: statusPengantaran,
-                    courier_id: courierId,
-                    courier_name: courierName
-                });
-            }
-
-            const { error } = await supabase.from('deliveries').insert(payloadArray);
-            if (error) return alert('Gagal: ' + error.message);
-
-            document.getElementById('dispatchForm').classList.add('hidden');
-            document.getElementById('qrContainer').classList.remove('hidden');
-            document.getElementById('assigned-courier-text').innerHTML = infoTeks;
-            
-            document.getElementById('qrcode').innerHTML = "";
-            new QRCode(document.getElementById('qrcode'), { text: `${window.location.origin}/kurir-detail.html?batch=${batchId}`, width: 220, height: 220 });
-            loadOrders();
-        });
-
-        window.openActionModal = (batchId) => {
-            document.getElementById('actionModal').classList.remove('hidden');
-            const qrBox = document.getElementById('re-qr-container');
-            qrBox.innerHTML = "";
-            new QRCode(qrBox, { text: `${window.location.origin}/kurir-detail.html?batch=${batchId}`, width: 180, height: 180 });
-        };
-
-        loadFees(); loadOrders();
-    </script>
+    <script type="module" src="./js/admin.js"></script>
 </body>
 </html>
