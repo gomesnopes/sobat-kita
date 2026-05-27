@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MedLogix Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary": "#565e74",
+                      "on-primary-container": "#00422b",
+                      "error": "#ba1a1a",
+                      "background": "#f8f9ff",
+                      "on-background": "#0b1c30",
+                      "surface-container-low": "#eff4ff",
+                      "primary-fixed-dim": "#4edea3",
+                      "surface-bright": "#f8f9ff",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#d3e4fe",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#dce9ff",
+                      "primary": "#006c49",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#5c647a",
+                      "tertiary": "#005ac2",
+                      "inverse-on-surface": "#eaf1ff",
+                      "on-secondary-fixed": "#131b2e",
+                      "secondary-fixed-dim": "#bec6e0",
+                      "surface-container": "#e5eeff",
+                      "tertiary-fixed": "#d8e2ff",
+                      "tertiary-container": "#71a1ff",
+                      "surface-dim": "#cbdbf5",
+                      "on-primary": "#ffffff",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed-variant": "#3f465c",
+                      "primary-container": "#10b981",
+                      "surface-tint": "#006c49",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#0b1c30",
+                      "inverse-surface": "#213145",
+                      "on-surface-variant": "#3c4a42",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-container": "#00367a",
+                      "outline": "#6c7a71",
+                      "on-primary-fixed": "#002113",
+                      "secondary-container": "#dae2fd",
+                      "surface": "#f8f9ff",
+                      "on-primary-fixed-variant": "#005236",
+                      "secondary-fixed": "#dae2fd",
+                      "on-tertiary-fixed": "#001a42",
+                      "inverse-primary": "#4edea3",
+                      "on-tertiary-fixed-variant": "#004395",
+                      "primary-fixed": "#6ffbbe",
+                      "outline-variant": "#bbcabf",
+                      "tertiary-fixed-dim": "#adc6ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "sm": "12px",
+                      "container-margin-desktop": "32px",
+                      "xl": "32px",
+                      "gutter": "16px",
+                      "xs": "4px",
+                      "lg": "24px",
+                      "container-margin-mobile": "16px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "display-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md text-body-md antialiased overflow-x-hidden">
+<!-- SideNavBar -->
+<aside class="w-[280px] h-screen fixed left-0 top-0 bg-surface shadow-sm z-50 flex flex-col h-full py-lg px-md">
+<div class="mb-xl px-sm">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">MedLogix</h1>
+<p class="font-label-sm text-label-sm text-secondary mt-xs">Hospital Logistics</p>
+</div>
+<nav class="flex-1 space-y-xs">
+<a class="flex items-center gap-md px-sm py-sm rounded-lg text-primary font-bold transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-md px-sm py-sm rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">package_2</span>
+                Orders
+            </a>
+<a class="flex items-center gap-md px-sm py-sm rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+                Inventory
+            </a>
+<a class="flex items-center gap-md px-sm py-sm rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+                Couriers
+            </a>
+<a class="flex items-center gap-md px-sm py-sm rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="mt-auto pt-lg border-t border-surface-variant">
+<div class="flex items-center gap-sm px-sm mb-md">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center overflow-hidden">
+<img alt="Admin Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5CNqiUVL6vy3yDm1C8EPPkg64xckG6ccpTZsxHMfRNmBN40YdESJGhJdHDqCiMt2msTNwqBGMDhEwS-BV6XU8vtpqF0fEKt4ZCd_AO-TV8vtIXluzfygNNAkzpSqqONUYsnj5QCph77sJJQK28DVME5QsqKZYhbDA579rOP6P8fesbFeNTGDrSmxc2NiByN__TZhE2gVDCEaG0kdTPgXVwdf3fHE1A-5nP5My4-me3fP_AHIwOvznT_x0g_eWrjNZBrWtTciIH8E"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Admin User</p>
+<p class="font-label-sm text-label-sm text-secondary">admin@medlogix.com</p>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-sm rounded-lg font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined">add</span>
+                New Dispatch
+            </button>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 flex justify-between items-center px-lg py-sm ml-[280px] w-[calc(100%-280px)] bg-surface border-b border-outline-variant z-40 h-[72px]">
+<div class="flex items-center w-96 bg-surface-container-low rounded-full px-md py-sm">
+<span class="material-symbols-outlined text-on-surface-variant mr-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant p-0" placeholder="Search orders, couriers..." type="text"/>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant">
+<button class="hover:text-primary transition-colors scale-95 active:scale-90 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="hover:text-primary transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] pt-[72px] min-h-screen bg-background">
+<div class="p-lg max-w-[1440px] mx-auto">
+<div class="mb-lg flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-background">System Overview</h2>
+<p class="font-body-md text-body-md text-secondary mt-xs">Real-time status of medical logistics network.</p>
+</div>
+<div class="flex items-center gap-sm font-label-sm text-label-sm text-secondary bg-surface px-md py-sm rounded-lg shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+                    Live Sync Active
+                </div>
+</div>
+<!-- Summary Cards Bento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg mb-lg">
+<!-- Total Orders -->
+<div class="bg-surface rounded-xl p-lg shadow-sm border border-surface-variant hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-surface-container-high rounded-full opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
+<div class="flex justify-between items-start mb-md relative z-10">
+<p class="font-label-md text-label-md text-secondary uppercase tracking-wider">Total Orders</p>
+<span class="material-symbols-outlined text-primary bg-primary-container bg-opacity-20 rounded-lg p-1">package_2</span>
+</div>
+<div class="flex items-baseline gap-sm relative z-10">
+<h3 class="font-display-lg text-display-lg text-on-background">1,248</h3>
+<p class="font-label-sm text-label-sm text-primary flex items-center">
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span> 12%
+                        </p>
+</div>
+</div>
+<!-- Active Couriers -->
+<div class="bg-surface rounded-xl p-lg shadow-sm border border-surface-variant hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-surface-container-high rounded-full opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
+<div class="flex justify-between items-start mb-md relative z-10">
+<p class="font-label-md text-label-md text-secondary uppercase tracking-wider">Active Couriers</p>
+<span class="material-symbols-outlined text-tertiary bg-tertiary-container bg-opacity-20 rounded-lg p-1">local_shipping</span>
+</div>
+<div class="flex items-baseline gap-sm relative z-10">
+<h3 class="font-display-lg text-display-lg text-on-background">84</h3>
+<p class="font-label-sm text-label-sm text-secondary">/ 112 Total</p>
+</div>
+</div>
+<!-- Revenue/Efficiency -->
+<div class="bg-surface rounded-xl p-lg shadow-sm border border-surface-variant hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-surface-container-high rounded-full opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
+<div class="flex justify-between items-start mb-md relative z-10">
+<p class="font-label-md text-label-md text-secondary uppercase tracking-wider">On-Time Rate</p>
+<span class="material-symbols-outlined text-primary bg-primary-container bg-opacity-20 rounded-lg p-1">schedule</span>
+</div>
+<div class="flex items-baseline gap-sm relative z-10">
+<h3 class="font-display-lg text-display-lg text-on-background">98.4%</h3>
+<p class="font-label-sm text-label-sm text-primary flex items-center">
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span> 0.2%
+                        </p>
+</div>
+<div class="w-full bg-surface-container-low h-1.5 rounded-full mt-sm overflow-hidden">
+<div class="bg-primary h-full w-[98.4%] rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Main Stage Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-lg">
+<!-- Recent Orders Table Area -->
+<div class="xl:col-span-2 bg-surface rounded-xl shadow-sm border border-surface-variant flex flex-col h-[500px]">
+<div class="p-md border-b border-surface-variant flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-on-background">Recent Orders</h3>
+<button class="font-label-sm text-label-sm text-primary hover:underline">View All</button>
+</div>
+<div class="flex-1 overflow-y-auto p-0">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-container-lowest z-10">
+<tr>
+<th class="px-md py-sm font-label-sm text-label-sm text-secondary uppercase border-b border-surface-variant">Order ID</th>
+<th class="px-md py-sm font-label-sm text-label-sm text-secondary uppercase border-b border-surface-variant">Destination</th>
+<th class="px-md py-sm font-label-sm text-label-sm text-secondary uppercase border-b border-surface-variant">Priority</th>
+<th class="px-md py-sm font-label-sm text-label-sm text-secondary uppercase border-b border-surface-variant">Status</th>
+<th class="px-md py-sm font-label-sm text-label-sm text-secondary uppercase border-b border-surface-variant text-right">Action</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm border-b border-surface-variant font-medium">#MD-8832</td>
+<td class="px-md py-sm border-b border-surface-variant">St. Jude Medical Center</td>
+<td class="px-md py-sm border-b border-surface-variant">
+<div class="flex items-center gap-xs text-error">
+<span class="material-symbols-outlined text-[16px]">priority_high</span> High
+                                        </div>
+</td>
+<td class="px-md py-sm border-b border-surface-variant">
+<span class="inline-flex items-center px-2 py-1 rounded-full font-label-sm text-label-sm bg-tertiary-container text-on-tertiary-container bg-opacity-20">
+                                            In Transit
+                                        </span>
+</td>
+<td class="px-md py-sm border-b border-surface-variant text-right">
+<button class="p-1 rounded-md text-secondary hover:text-primary hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm border-b border-surface-variant font-medium">#MD-8831</td>
+<td class="px-md py-sm border-b border-surface-variant">Mercy Hospital West</td>
+<td class="px-md py-sm border-b border-surface-variant">Standard</td>
+<td class="px-md py-sm border-b border-surface-variant">
+<span class="inline-flex items-center px-2 py-1 rounded-full font-label-sm text-label-sm bg-surface-variant text-on-surface-variant">
+                                            Picked Up
+                                        </span>
+</td>
+<td class="px-md py-sm border-b border-surface-variant text-right">
+<button class="p-1 rounded-md text-secondary hover:text-primary hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm border-b border-surface-variant font-medium">#MD-8830</td>
+<td class="px-md py-sm border-b border-surface-variant">City Clinic Downtown</td>
+<td class="px-md py-sm border-b border-surface-variant text-primary">Standard</td>
+<td class="px-md py-sm border-b border-surface-variant">
+<span class="inline-flex items-center px-2 py-1 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary-container bg-opacity-20">
+                                            Delivered
+                                        </span>
+</td>
+<td class="px-md py-sm border-b border-surface-variant text-right">
+<button class="p-1 rounded-md text-secondary hover:text-primary hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm border-b border-surface-variant font-medium">#MD-8829</td>
+<td class="px-md py-sm border-b border-surface-variant">Valley Blood Bank</td>
+<td class="px-md py-sm border-b border-surface-variant">
+<div class="flex items-center gap-xs text-error">
+<span class="material-symbols-outlined text-[16px]">ac_unit</span> Critical Temp
+                                        </div>
+</td>
+<td class="px-md py-sm border-b border-surface-variant">
+<span class="inline-flex items-center px-2 py-1 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container bg-opacity-30">
+                                            Delayed
+                                        </span>
+</td>
+<td class="px-md py-sm border-b border-surface-variant text-right">
+<button class="p-1 rounded-md text-secondary hover:text-primary hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Mini Map Area -->
+<div class="xl:col-span-1 bg-surface rounded-xl shadow-sm border border-surface-variant overflow-hidden flex flex-col h-[500px]">
+<div class="p-md border-b border-surface-variant flex justify-between items-center bg-surface z-10">
+<h3 class="font-headline-md text-headline-md text-on-background">Live Network Map</h3>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-label-sm text-[10px] text-secondary uppercase">Active</span>
+</div>
+</div>
+<div class="flex-1 relative bg-surface-container-high w-full h-full overflow-hidden" data-alt="A sleek, stylized map interface of a modern city depicted in a high-key light mode. The map features minimal, precise street lines in soft slate and stark white, avoiding visual clutter. Scattered across the grid are glowing, precision-grade Med-Green pulse dots indicating active medical courier locations. The overall aesthetic is incredibly clean, corporate, and highly legible, evoking a sense of calm efficiency and reliable logistics tracking within a bright, airy digital environment." data-location="City Map" style="background-image: url('https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg'); background-size: cover; background-position: center;">
+<!-- Overlay gradient to ensure UI readability -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface/80 to-transparent pointer-events-none"></div>
+<!-- Simulated Courier Pings -->
+<div class="absolute top-[30%] left-[40%] w-3 h-3 bg-primary rounded-full border-2 border-surface shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse"></div>
+<div class="absolute top-[60%] left-[20%] w-3 h-3 bg-primary rounded-full border-2 border-surface shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
+<div class="absolute top-[45%] left-[70%] w-3 h-3 bg-primary rounded-full border-2 border-surface shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse"></div>
+<div class="absolute top-[75%] left-[55%] w-3 h-3 bg-tertiary rounded-full border-2 border-surface shadow-[0_0_10px_rgba(0,90,194,0.8)]"></div> <!-- idle/different status -->
+<!-- Floating Action overlay -->
+<div class="absolute bottom-md left-md right-md bg-surface p-sm rounded-lg shadow-sm border border-surface-variant flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">my_location</span>
+<span class="font-label-sm text-label-sm text-on-surface">Auto-center</span>
+</div>
+<div class="flex items-center gap-xs">
+<button class="w-8 h-8 flex items-center justify-center bg-surface-container rounded-md hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined text-[18px]">remove</span></button>
+<button class="w-8 h-8 flex items-center justify-center bg-surface-container rounded-md hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined text-[18px]">add</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
