@@ -86,7 +86,9 @@
       <section class="p-8">
 <!-- FILTER AREA -->
 
-<div class="flex gap-4 mb-6">
+<!-- FILTER AREA -->
+
+<div class="flex flex-wrap gap-4 mb-6">
 
   <input
     type="text"
@@ -97,7 +99,13 @@
 
   <input
     type="date"
-    id="date-filter"
+    id="start-date"
+    class="bg-white border rounded-xl px-4 py-3"
+  >
+
+  <input
+    type="date"
+    id="end-date"
     class="bg-white border rounded-xl px-4 py-3"
   >
 
@@ -189,6 +197,30 @@
             </tbody>
 
           </table>
+
+          <!-- PAGINATION -->
+
+<div class="flex justify-between items-center p-6 border-t">
+
+  <button
+    id="prev-page"
+    class="bg-slate-100 px-4 py-2 rounded-lg"
+  >
+    Sebelumnya
+  </button>
+
+  <p id="page-info" class="text-sm text-slate-500">
+    Halaman 1
+  </p>
+
+  <button
+    id="next-page"
+    class="bg-slate-100 px-4 py-2 rounded-lg"
+  >
+    Selanjutnya
+  </button>
+
+</div>
 
         </div>
 
@@ -355,6 +387,40 @@
   </div>
 
 </div>
-  
+  <!-- DETAIL DELIVERY MODAL -->
+
+<div
+  id="detail-modal"
+  class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4"
+>
+
+  <div class="bg-white rounded-2xl w-full max-w-md p-6">
+
+    <div class="flex justify-between items-center mb-5">
+
+      <h3 class="text-2xl font-bold">
+        Detail Pengantaran
+      </h3>
+
+      <button id="close-detail-modal">
+        ✕
+      </button>
+
+    </div>
+
+    <div id="detail-content">
+
+    </div>
+
+    <button
+      id="print-delivery"
+      class="w-full mt-5 bg-green-700 text-white py-3 rounded-xl"
+    >
+      Print
+    </button>
+
+  </div>
+
+</div>
 </body>
 </html>
