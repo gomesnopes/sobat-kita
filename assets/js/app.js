@@ -93,13 +93,49 @@ document
 .addEventListener(
   'click',
   () => {
-    zonesSection
-      .classList
-      .remove('hidden')
+
+    // ACTIVE TAB STYLE
+
+    document
+    .getElementById('menu-zones')
+    .classList.add(
+      'bg-green-50',
+      'text-green-700'
+    )
+
+document
+.getElementById(
+  'menu-deliveries'
+)
+.addEventListener(
+  'click',
+  () => {
+
+    // ACTIVE TAB STYLE
+
+    document
+    .getElementById('menu-deliveries')
+    .classList.add(
+      'bg-green-50',
+      'text-green-700'
+    )
+
+    document
+    .getElementById('menu-zones')
+    .classList.remove(
+      'bg-green-50',
+      'text-green-700'
+    )
+
+    // SHOW SECTION
+
     deliveriesSection
       .classList
+      .remove('hidden')
+
+    zonesSection
+      .classList
       .add('hidden')
-    loadZones()
 })
 /* ======================================================
    LOAD DELIVERIES
