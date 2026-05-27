@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>
+    Tracking Pengantaran
+  </title>
+  <!-- TAILWIND -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FONT -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+  <div class="max-w-2xl mx-auto p-6">
+    <!-- HEADER -->
+    <div
+      class="bg-green-700 text-white rounded-3xl p-8 mb-6"
+    >
+      <h1 class="text-3xl font-bold">
+        Sobat Kita
+      </h1>
+      <p class="mt-2 text-green-100">
+        Tracking Pengantaran Obat
+      </p>
+    </div>
+    <!-- CARD -->
+    <div
+      id="tracking-card"
+      class="bg-white rounded-3xl shadow-sm border p-8"
+    >
+      <div class="animate-pulse">
+        <div class="h-5 bg-slate-200 rounded w-48 mb-4"></div>
+        <div class="h-4 bg-slate-200 rounded w-full mb-2"></div>
+        <div class="h-4 bg-slate-200 rounded w-72"></div>
+      </div>
+    </div>
+  </div>
+  <!-- SUPABASE -->
+  <script type="module">
+    import { supabase }
+    from './assets/js/supabase.js'
+    const params =
+      new URLSearchParams(
+        window.location.search
+      )
+    const token =
+      params.get('token')
+    const card =
+      document.getElementById(
+        'tracking-card'
+      )
+    async function loadTracking() {
+      const { data, error } =
+        await supabase
+        .from('deliveries')
+        .select('*')
+        .eq('qr_token', token)
+        .single()
+      if(error || !data) {
+        card.innerHTML = `
+          <div class="text-center py-10">
+            <h2 class="text-2xl font-bold text-red-600">
+              Data Tidak Ditemukan
+            </h2>
+          </div>
+        `
+        return
+      }
+      let statusColor =
+        'bg-slate-100 text-slate-700'
+      let statusText =
+        'Pending'
+      let progressWidth =
+        '20%'
+      if(data.status === 'on_delivery') {
+        statusColor =
+          'bg-blue-100 text-blue-700'
+        statusText =
+          'Sedang Diantar'
+        progressWidth =
+          '70%'
+      }
+      if(data.status === 'completed') {
+        statusColor =
+          'bg-green-100 text-green-700'
+        statusText =
+          'Selesai'
+        progressWidth =
+          '100%'
+      }
+      card.innerHTML = `
+        <div class="flex justify-between items-start mb-6">
+          <div>
+            <p class="text-sm text-slate-500">
+              Nama Pasien
+            </p>
+            <h2 class="text-3xl font-bold text-slate-800">
+              ${data.patient_name}
+            </h2>
+          </div>
+          <span
+            class="${statusColor} px-4 py-2 rounded-full text-sm font-semibold"
+          >
+            ${statusText}
+          </span>
+        </div>
+        <!-- PROGRESS -->
+        <div class="mb-8">
+          <div
+            class="w-full bg-slate-200 rounded-full h-4 overflow-hidden"
+          >
+            <div
+              class="bg-green-600 h-full rounded-full transition-all duration-500"
+              style="width:${progressWidth}"
+            ></div>
+          </div>
+        </div>
+        <!-- DETAIL -->
+        <div class="space-y-5">
+          <div>
+            <p class="text-sm text-slate-500">
+              Kurir
+            </p>
+            <p class="font-semibold text-lg">
+              ${data.courier_name || '-'}
+            </p>
+          </div>
+          <div>
+            <p class="text-sm text-slate-500">
+              Kelurahan
+            </p>
+            <p class="font-semibold text-lg">
+              ${data.kelurahan}
+            </p>
+          </div>
+          <div>
+            <p class="text-sm text-slate-500">
+              Alamat
+            </p>
+            <p class="font-semibold text-lg">
+              ${data.address}
+            </p>
+          </div>
+          <div>
+            <p class="text-sm text-slate-500">
+              Ongkir
+            </p>
+            <p class="font-semibold text-lg text-green-700">
+              Rp ${parseInt(
+                data.ongkir || 0
+              ).toLocaleString()}
+            </p>
+          </div>
+          <div>
+            <p class="text-sm text-slate-500">
+              Dibuat Pada
+            </p>
+            <p class="font-semibold text-lg">
+              ${new Date(
+                data.created_at
+              ).toLocaleString()}
+            </p>
+          </div>
+        </div>
+      `
+    }
+    // REALTIME
+    supabase
+    .channel('deliveries')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'deliveries'
+      },
+      () => {
+        loadTracking()
+      }
+    )
+    .subscribe()
+    loadTracking()
+  </script>
+</body>
+</html>
