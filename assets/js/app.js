@@ -530,7 +530,7 @@ function showDetailModal(data) {
     ),
     {
       text:
-        `${window.location.origin}/tracking.html?token=${data.qrToken}`,
+        `${window.location.origin}/sobatkita/tracking.html?token=${data.qrToken}`,
       width: 220,
       height: 220
     }
@@ -551,7 +551,7 @@ window.showQR = (token) => {
     qrBox,
     {
       text:
-        `${window.location.origin}/tracking.html?token=${token}`,
+        `${window.location.origin}/sobatkita/tracking.html?token=${token}`,
       width: 220,
       height: 220
     }
