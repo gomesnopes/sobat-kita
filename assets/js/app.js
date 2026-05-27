@@ -1,4 +1,13 @@
 import { supabase } from './supabase.js'
 
-console.log("Sobat Kita Ready")
-console.log(supabase)
+async function testDatabase() {
+
+  const { data, error } = await supabase
+    .from('couriers')
+    .select('*')
+
+  console.log(data)
+  console.log(error)
+}
+
+testDatabase()
