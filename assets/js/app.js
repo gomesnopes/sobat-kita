@@ -2,6 +2,14 @@ import { supabase } from './supabase.js'
 /* ======================================================
    ELEMENTS
 ====================================================== */
+const deliveriesSection =
+  document.getElementById(
+    'deliveries-section'
+  )
+const zonesSection =
+  document.getElementById(
+    'zones-section'
+  )
 const tbody =
   document.getElementById(
     'delivery-table-body'
@@ -50,9 +58,49 @@ const ongkirDisplay =
   document.getElementById(
     'ongkir-display'
   )
+const zoneModal =
+  document.getElementById(
+    'zone-modal'
+  )
+const zoneForm =
+  document.getElementById(
+    'zone-form'
+  )
 let selectedOngkir = 0
 let currentPage = 1
 const limit = 5
+/* ======================================================
+   NAVIGATION
+====================================================== */
+document
+.getElementById(
+  'menu-deliveries'
+)
+.addEventListener(
+  'click',
+  () => {
+    deliveriesSection
+      .classList
+      .remove('hidden')
+    zonesSection
+      .classList
+      .add('hidden')
+})
+document
+.getElementById(
+  'menu-zones'
+)
+.addEventListener(
+  'click',
+  () => {
+    zonesSection
+      .classList
+      .remove('hidden')
+    deliveriesSection
+      .classList
+      .add('hidden')
+    loadZones()
+})
 /* ======================================================
    LOAD DELIVERIES
 ====================================================== */
@@ -63,9 +111,7 @@ async function loadDeliveries() {
     from + limit - 1
   let query = supabase
     .from('deliveries')
-    .select('*', {
-      count: 'exact'
-    })
+    .select('*')
     .order('created_at', {
       ascending: false
     })
@@ -77,7 +123,7 @@ async function loadDeliveries() {
       `%${searchInput.value}%`
     )
   }
-  // FILTER TANGGAL
+  // FILTER DATE
   if(startDate.value) {
     query = query.gte(
       'created_at',
@@ -90,7 +136,7 @@ async function loadDeliveries() {
       endDate.value + 'T23:59:59'
     )
   }
-  // DEFAULT HARI INI
+  // DEFAULT TODAY
   if(
     !startDate.value &&
     !endDate.value
@@ -123,15 +169,17 @@ async function loadDeliveries() {
     `Halaman ${currentPage}`
 }
 /* ======================================================
-   RENDER
+   RENDER DELIVERIES
 ====================================================== */
 function renderDeliveries(data) {
   tbody.innerHTML = ''
   if(data.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="5"
-          class="text-center py-10 text-slate-400">
+        <td
+          colspan="5"
+          class="text-center py-10 text-slate-400"
+        >
           Tidak ada data
         </td>
       </tr>
@@ -271,7 +319,51 @@ async function loadKelurahan(
   })
 }
 /* ======================================================
-   AUTO DRIVER
+   LOAD ZONES
+====================================================== */
+async function loadZones() {
+  const tbody =
+    document.getElementById(
+      'zones-table-body'
+    )
+  const { data, error } =
+    await supabase
+    .from('delivery_zones')
+    .select('*')
+    .order('kecamatan')
+  if(error) {
+    console.log(error)
+    return
+  }
+  tbody.innerHTML = ''
+  data.forEach(item => {
+    tbody.innerHTML += `
+      <tr class="border-b">
+        <td class="px-6 py-4">
+          ${item.kecamatan}
+        </td>
+        <td class="px-6 py-4">
+          ${item.kelurahan}
+        </td>
+        <td class="px-6 py-4 font-semibold text-green-700">
+          Rp ${parseInt(
+            item.ongkir
+          ).toLocaleString()}
+        </td>
+        <td class="px-6 py-4">
+          <button
+            onclick="deleteZone('${item.id}')"
+            class="bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm"
+          >
+            Hapus
+          </button>
+        </td>
+      </tr>
+    `
+  })
+}
+/* ======================================================
+   AUTO ASSIGN DRIVER
 ====================================================== */
 async function getAvailableCourier() {
   const { data, error } =
@@ -296,7 +388,7 @@ async function getAvailableCourier() {
   return data[0]
 }
 /* ======================================================
-   OPEN MODAL
+   OPEN DELIVERY MODAL
 ====================================================== */
 document
 .getElementById(
@@ -314,7 +406,7 @@ document
     await loadKecamatan()
 })
 /* ======================================================
-   CLOSE MODAL
+   CLOSE MODALS
 ====================================================== */
 document
 .getElementById(
@@ -346,6 +438,31 @@ document
   'click',
   () => {
     detailModal
+      .classList
+      .add('hidden')
+})
+document
+.getElementById(
+  'btn-add-zone'
+)
+.addEventListener(
+  'click',
+  () => {
+    zoneModal
+      .classList
+      .remove('hidden')
+    zoneModal
+      .classList
+      .add('flex')
+})
+document
+.getElementById(
+  'close-zone-modal'
+)
+.addEventListener(
+  'click',
+  () => {
+    zoneModal
       .classList
       .add('hidden')
 })
@@ -463,6 +580,45 @@ deliveryForm.addEventListener(
     loadDeliveries()
 })
 /* ======================================================
+   CREATE ZONE
+====================================================== */
+zoneForm.addEventListener(
+  'submit',
+  async (e) => {
+    e.preventDefault()
+    const kecamatan =
+      document.getElementById(
+        'zone-kecamatan'
+      ).value
+    const kelurahan =
+      document.getElementById(
+        'zone-kelurahan'
+      ).value
+    const ongkir =
+      document.getElementById(
+        'zone-ongkir'
+      ).value
+    const { error } =
+      await supabase
+      .from('delivery_zones')
+      .insert([
+        {
+          kecamatan,
+          kelurahan,
+          ongkir
+        }
+      ])
+    if(error) {
+      alert(error.message)
+      return
+    }
+    zoneForm.reset()
+    zoneModal
+      .classList
+      .add('hidden')
+    loadZones()
+})
+/* ======================================================
    DETAIL MODAL
 ====================================================== */
 function showDetailModal(data) {
@@ -530,7 +686,7 @@ function showDetailModal(data) {
     ),
     {
       text:
-        `${window.location.origin}/sobatkita/tracking.html?token=${data.qrToken}`,
+`${window.location.origin}/sobat-kita/tracking.html?token=${data.qrToken}`,
       width: 220,
       height: 220
     }
@@ -551,14 +707,14 @@ window.showQR = (token) => {
     qrBox,
     {
       text:
-        `${window.location.origin}/sobatkita/tracking.html?token=${token}`,
+`${window.location.origin}/sobat-kita/tracking.html?token=${token}`,
       width: 220,
       height: 220
     }
   )
 }
 /* ======================================================
-   DELETE
+   DELETE DELIVERY
 ====================================================== */
 window.deleteDelivery =
   async (id) => {
@@ -573,7 +729,22 @@ window.deleteDelivery =
   loadDeliveries()
 }
 /* ======================================================
-   EDIT
+   DELETE ZONE
+====================================================== */
+window.deleteZone =
+  async (id) => {
+  const yes = confirm(
+    'Hapus wilayah?'
+  )
+  if(!yes) return
+  await supabase
+    .from('delivery_zones')
+    .delete()
+    .eq('id', id)
+  loadZones()
+}
+/* ======================================================
+   EDIT DELIVERY
 ====================================================== */
 window.editDelivery =
   async (id) => {
