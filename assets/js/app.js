@@ -1,5 +1,13 @@
 import { supabase } from './supabase.js'
 
+const deliveryModal = document.getElementById(
+  'delivery-modal'
+)
+
+const deliveryForm = document.getElementById(
+  'delivery-form'
+)
+
 const tbody = document.getElementById(
   'delivery-table-body'
 )
@@ -11,6 +19,45 @@ const searchInput = document.getElementById(
 const dateFilter = document.getElementById(
   'date-filter'
 )
+document
+.getElementById('btn-new-delivery')
+.addEventListener('click', async () => {
+
+  deliveryModal.classList.remove('hidden')
+  deliveryModal.classList.add('flex')
+
+  loadCouriers()
+})
+async function loadCouriers() {
+
+  const select = document.getElementById(
+    'courier-select'
+  )
+
+  const { data, error } = await supabase
+    .from('couriers')
+    .select('*')
+
+  if(error) {
+    console.log(error)
+    return
+  }
+
+  select.innerHTML = `
+    <option value="">
+      Pilih Kurir
+    </option>
+  `
+
+  data.forEach(courier => {
+
+    select.innerHTML += `
+      <option value="${courier.nama}">
+        ${courier.nama}
+      </option>
+    `
+  })
+}
 
 async function loadDeliveries() {
 
@@ -207,3 +254,54 @@ dateFilter.addEventListener(
 )
 
 loadDeliveries()
+
+deliveryForm.addEventListener(
+  'submit',
+  async (e) => {
+
+    e.preventDefault()
+
+    const patientName =
+      document.getElementById('patient-name').value
+
+    const patientPhone =
+      document.getElementById('patient-phone').value
+
+    const kelurahan =
+      document.getElementById('kelurahan').value
+
+    const address =
+      document.getElementById('address').value
+
+    const courierName =
+      document.getElementById('courier-select').value
+
+    const qrToken = crypto.randomUUID()
+
+    const { error } = await supabase
+      .from('deliveries')
+      .insert([
+        {
+          patient_name: patientName,
+          patient_phone: patientPhone,
+          kelurahan: kelurahan,
+          address: address,
+          courier_name: courierName,
+          qr_token: qrToken,
+          status: 'pending'
+        }
+      ])
+
+    if(error) {
+      alert(error.message)
+      return
+    }
+
+    alert('Pengantaran berhasil dibuat')
+
+    deliveryForm.reset()
+
+    deliveryModal.classList.add('hidden')
+
+    loadDeliveries()
+})
