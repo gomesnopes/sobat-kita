@@ -1,7 +1,5 @@
 import { supabase } from './supabase.js'
 
-console.log('Sobat Kita Running 🚀')
-
 /* ======================================================
    ELEMENTS
 ====================================================== */
@@ -14,8 +12,12 @@ const searchInput = document.getElementById(
   'search-input'
 )
 
-const dateFilter = document.getElementById(
-  'date-filter'
+const startDate = document.getElementById(
+  'start-date'
+)
+
+const endDate = document.getElementById(
+  'end-date'
 )
 
 const deliveryModal = document.getElementById(
@@ -34,21 +36,32 @@ const qrBox = document.getElementById(
   'qrcode'
 )
 
+const detailModal = document.getElementById(
+  'detail-modal'
+)
+
+let currentPage = 1
+const limit = 5
+
 /* ======================================================
    LOAD DELIVERIES
 ====================================================== */
 
 async function loadDeliveries() {
 
+  const from = (currentPage - 1) * limit
+  const to = from + limit - 1
+
   let query = supabase
     .from('deliveries')
-    .select('*')
+    .select('*', { count: 'exact' })
     .order('created_at', {
       ascending: false
     })
+    .range(from, to)
 
   // SEARCH
-  if(searchInput && searchInput.value) {
+  if(searchInput.value) {
 
     query = query.ilike(
       'patient_name',
@@ -56,16 +69,37 @@ async function loadDeliveries() {
     )
   }
 
-  // DATE FILTER
-  if(dateFilter && dateFilter.value) {
+  // FILTER TANGGAL
+  if(startDate.value) {
 
     query = query.gte(
       'created_at',
-      dateFilter.value
+      startDate.value
     )
   }
 
-  const { data, error } = await query
+  if(endDate.value) {
+
+    query = query.lte(
+      'created_at',
+      endDate.value + 'T23:59:59'
+    )
+  }
+
+  // DEFAULT HARI INI
+  if(!startDate.value && !endDate.value) {
+
+    const today = new Date()
+      .toISOString()
+      .split('T')[0]
+
+    query = query.gte(
+      'created_at',
+      today
+    )
+  }
+
+  const { data, error, count } = await query
 
   if(error) {
     console.log(error)
@@ -73,10 +107,15 @@ async function loadDeliveries() {
   }
 
   renderDeliveries(data)
+
+  document.getElementById(
+    'page-info'
+  ).innerText =
+    `Halaman ${currentPage}`
 }
 
 /* ======================================================
-   RENDER TABLE
+   RENDER
 ====================================================== */
 
 function renderDeliveries(data) {
@@ -88,7 +127,7 @@ function renderDeliveries(data) {
     tbody.innerHTML = `
       <tr>
         <td colspan="5" class="text-center py-10 text-slate-400">
-          Belum ada data pengantaran
+          Tidak ada data
         </td>
       </tr>
     `
@@ -150,15 +189,11 @@ function renderDeliveries(data) {
         </td>
 
         <td class="px-6 py-4">
-
           ${item.courier_name || '-'}
-
         </td>
 
         <td class="px-6 py-4">
-
           ${badge}
-
         </td>
 
         <td class="px-6 py-4">
@@ -167,14 +202,21 @@ function renderDeliveries(data) {
 
             <button
               onclick="showQR('${item.qr_token}')"
-              class="bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg text-sm"
+              class="bg-slate-100 px-3 py-2 rounded-lg text-sm"
             >
               QR
             </button>
 
             <button
+              onclick="editDelivery('${item.id}')"
+              class="bg-blue-100 text-blue-700 px-3 py-2 rounded-lg text-sm"
+            >
+              Edit
+            </button>
+
+            <button
               onclick="deleteDelivery('${item.id}')"
-              class="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-2 rounded-lg text-sm"
+              class="bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm"
             >
               Hapus
             </button>
@@ -189,38 +231,26 @@ function renderDeliveries(data) {
 }
 
 /* ======================================================
-   LOAD COURIERS
+   AUTO ASSIGN DRIVER
 ====================================================== */
 
-async function loadCouriers() {
-
-  const select = document.getElementById(
-    'courier-select'
-  )
+async function getAvailableCourier() {
 
   const { data, error } = await supabase
     .from('couriers')
     .select('*')
+    .order('last_assigned_at', {
+      ascending: true,
+      nullsFirst: true
+    })
+    .limit(1)
 
-  if(error) {
-    console.log(error)
-    return
+  if(error || !data.length) {
+
+    return null
   }
 
-  select.innerHTML = `
-    <option value="">
-      Pilih Kurir
-    </option>
-  `
-
-  data.forEach(courier => {
-
-    select.innerHTML += `
-      <option value="${courier.nama}">
-        ${courier.nama}
-      </option>
-    `
-  })
+  return data[0]
 }
 
 /* ======================================================
@@ -229,16 +259,14 @@ async function loadCouriers() {
 
 document
 .getElementById('btn-new-delivery')
-.addEventListener('click', async () => {
+.addEventListener('click', () => {
 
   deliveryModal.classList.remove('hidden')
   deliveryModal.classList.add('flex')
-
-  await loadCouriers()
 })
 
 /* ======================================================
-   CLOSE DELIVERY MODAL
+   CLOSE MODAL
 ====================================================== */
 
 document
@@ -248,10 +276,6 @@ document
   deliveryModal.classList.add('hidden')
 })
 
-/* ======================================================
-   CLOSE QR MODAL
-====================================================== */
-
 document
 .getElementById('close-qr-modal')
 .addEventListener('click', () => {
@@ -259,67 +283,158 @@ document
   qrModal.classList.add('hidden')
 })
 
+document
+.getElementById('close-detail-modal')
+.addEventListener('click', () => {
+
+  detailModal.classList.add('hidden')
+})
+
 /* ======================================================
    CREATE DELIVERY
 ====================================================== */
 
-if(deliveryForm) {
+deliveryForm.addEventListener(
+  'submit',
+  async (e) => {
 
-  deliveryForm.addEventListener(
-    'submit',
-    async (e) => {
+    e.preventDefault()
 
-      e.preventDefault()
+    const patientName =
+      document.getElementById('patient-name').value
 
-      const patientName =
-        document.getElementById('patient-name').value
+    const patientPhone =
+      document.getElementById('patient-phone').value
 
-      const patientPhone =
-        document.getElementById('patient-phone').value
+    const kelurahan =
+      document.getElementById('kelurahan').value
 
-      const kelurahan =
-        document.getElementById('kelurahan').value
+    const address =
+      document.getElementById('address').value
 
-      const address =
-        document.getElementById('address').value
+    const qrToken = crypto.randomUUID()
 
-      const courierName =
-        document.getElementById('courier-select').value
+    // AUTO DRIVER
+    const courier =
+      await getAvailableCourier()
 
-      const qrToken = crypto.randomUUID()
+    const courierName =
+      courier?.nama || 'Belum Ada Kurir'
 
-      const { error } = await supabase
-        .from('deliveries')
-        .insert([
-          {
-            patient_name: patientName,
-            patient_phone: patientPhone,
-            kelurahan: kelurahan,
-            address: address,
-            courier_name: courierName,
-            qr_token: qrToken,
-            status: 'pending'
-          }
-        ])
+    const { error } = await supabase
+      .from('deliveries')
+      .insert([
+        {
+          patient_name: patientName,
+          patient_phone: patientPhone,
+          kelurahan,
+          address,
+          courier_name: courierName,
+          qr_token: qrToken,
+          status: 'pending'
+        }
+      ])
 
-      if(error) {
+    if(error) {
 
-        alert(error.message)
-        return
-      }
+      alert(error.message)
+      return
+    }
 
-      alert('Pengantaran berhasil dibuat 🎉')
+    // UPDATE LAST ASSIGNED
+    if(courier) {
 
-      deliveryForm.reset()
+      await supabase
+        .from('couriers')
+        .update({
+          last_assigned_at:
+            new Date().toISOString()
+        })
+        .eq('id', courier.id)
+    }
 
-      deliveryModal.classList.add('hidden')
+    // SHOW DETAIL MODAL
+    showDetailModal({
+      patientName,
+      patientPhone,
+      kelurahan,
+      address,
+      courierName,
+      qrToken
+    })
 
-      loadDeliveries()
-  })
+    deliveryForm.reset()
+
+    deliveryModal.classList.add('hidden')
+
+    loadDeliveries()
+})
+
+/* ======================================================
+   DETAIL MODAL
+====================================================== */
+
+function showDetailModal(data) {
+
+  detailModal.classList.remove('hidden')
+  detailModal.classList.add('flex')
+
+  document.getElementById(
+    'detail-content'
+  ).innerHTML = `
+
+    <div class="space-y-3">
+
+      <div>
+        <p class="text-sm text-slate-500">
+          Pasien
+        </p>
+
+        <p class="font-semibold">
+          ${data.patientName}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-sm text-slate-500">
+          Kurir
+        </p>
+
+        <p class="font-semibold">
+          ${data.courierName}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-sm text-slate-500">
+          Alamat
+        </p>
+
+        <p class="font-semibold">
+          ${data.address}
+        </p>
+      </div>
+
+      <div class="flex justify-center py-4">
+        <div id="detail-qr"></div>
+      </div>
+
+    </div>
+  `
+
+  new QRCode(
+    document.getElementById('detail-qr'),
+    {
+      text:
+        `${window.location.origin}/tracking.html?token=${data.qrToken}`,
+      width: 200,
+      height: 200
+    }
+  )
 }
 
 /* ======================================================
-   SHOW QR
+   QR MODAL
 ====================================================== */
 
 window.showQR = (token) => {
@@ -330,60 +445,108 @@ window.showQR = (token) => {
   qrBox.innerHTML = ''
 
   new QRCode(qrBox, {
-    text: `${window.location.origin}/tracking.html?token=${token}`,
+    text:
+      `${window.location.origin}/tracking.html?token=${token}`,
     width: 220,
     height: 220
   })
 }
 
 /* ======================================================
-   DELETE DELIVERY
+   DELETE
 ====================================================== */
 
 window.deleteDelivery = async (id) => {
 
-  const confirmDelete = confirm(
-    'Hapus data pengantaran?'
+  const yes = confirm(
+    'Hapus pengantaran?'
   )
 
-  if(!confirmDelete) return
+  if(!yes) return
 
-  const { error } = await supabase
+  await supabase
     .from('deliveries')
     .delete()
     .eq('id', id)
-
-  if(error) {
-
-    alert(error.message)
-    return
-  }
 
   loadDeliveries()
 }
 
 /* ======================================================
-   FILTER EVENTS
+   EDIT
 ====================================================== */
 
-if(searchInput) {
+window.editDelivery = async (id) => {
 
-  searchInput.addEventListener(
-    'input',
-    loadDeliveries
-  )
-}
-
-if(dateFilter) {
-
-  dateFilter.addEventListener(
-    'change',
-    loadDeliveries
+  alert(
+    'Fitur edit next step 😄'
   )
 }
 
 /* ======================================================
-   INITIAL LOAD
+   FILTER
+====================================================== */
+
+searchInput.addEventListener(
+  'input',
+  () => {
+
+    currentPage = 1
+    loadDeliveries()
+})
+
+startDate.addEventListener(
+  'change',
+  () => {
+
+    currentPage = 1
+    loadDeliveries()
+})
+
+endDate.addEventListener(
+  'change',
+  () => {
+
+    currentPage = 1
+    loadDeliveries()
+})
+
+/* ======================================================
+   PAGINATION
+====================================================== */
+
+document
+.getElementById('next-page')
+.addEventListener('click', () => {
+
+  currentPage++
+  loadDeliveries()
+})
+
+document
+.getElementById('prev-page')
+.addEventListener('click', () => {
+
+  if(currentPage > 1) {
+
+    currentPage--
+    loadDeliveries()
+  }
+})
+
+/* ======================================================
+   PRINT
+====================================================== */
+
+document
+.getElementById('print-delivery')
+.addEventListener('click', () => {
+
+  window.print()
+})
+
+/* ======================================================
+   INITIAL
 ====================================================== */
 
 loadDeliveries()
