@@ -69,7 +69,7 @@ function initAdmin() {
 async function handleFormSubmit(e) {
     e.preventDefault();
     
-    const no_resep = document.getElementById('no_resep').value;
+   const no_resep = document.getElementById('no_resep').value;
     const nama_pasien = document.getElementById('nama_pasien').value;
     const no_whatsapp = document.getElementById('no_whatsapp').value;
     const alamat = document.getElementById('alamat').value;
@@ -77,7 +77,13 @@ async function handleFormSubmit(e) {
     // Simpan data ke dalam tabel 'deliveries' di Supabase
     const { data, error } = await supabase
         .from('deliveries')
-        .insert([{ no_resep, nama_pasien, no_whatsapp, alamat, status: 'Pending' }])
+        .insert([{ 
+            order_number: no_resep, 
+            patient_name: nama_pasien, 
+            patient_phone: no_whatsapp, 
+            dropoff_address: alamat, 
+            status: 'Pending' 
+        }])
         .select();
 
     if (error) {
@@ -274,11 +280,11 @@ async function renderTableOrders() {
 
         const tr = `
             <tr class="hover:bg-slate-50 border-b border-slate-200 text-sm">
-                <td class="px-4 py-3 font-medium">#${order.no_resep}</td>
-                <td class="px-4 py-3">${order.nama_pasien}</td>
-                <td class="px-4 py-3 text-slate-500">${order.alamat}</td>
+                <td class="px-4 py-3 font-medium">#${order.order_number}</td>
+                <td class="px-4 py-3">${order.patient_name}</td>
+                <td class="px-4 py-3 text-slate-500">${order.dropoff_address}</td>
                 <td class="px-4 py-3">${statusBadge}</td>
-                <td class="px-4 py-3 text-right font-bold text-emerald-700">${order.courier_name || '-'}</td>
+                <td class="px-4 py-3 text-right font-bold text-emerald-700">-</td>
             </tr>
         `;
         tbody.insertAdjacentHTML('beforeend', tr);
