@@ -1,12 +1,10 @@
 import { supabase } from './supabase.js'
 
-const deliveryModal = document.getElementById(
-  'delivery-modal'
-)
+console.log('Sobat Kita Running 🚀')
 
-const deliveryForm = document.getElementById(
-  'delivery-form'
-)
+/* ======================================================
+   ELEMENTS
+====================================================== */
 
 const tbody = document.getElementById(
   'delivery-table-body'
@@ -19,45 +17,26 @@ const searchInput = document.getElementById(
 const dateFilter = document.getElementById(
   'date-filter'
 )
-document
-.getElementById('btn-new-delivery')
-.addEventListener('click', async () => {
 
-  deliveryModal.classList.remove('hidden')
-  deliveryModal.classList.add('flex')
+const deliveryModal = document.getElementById(
+  'delivery-modal'
+)
 
-  loadCouriers()
-})
-async function loadCouriers() {
+const deliveryForm = document.getElementById(
+  'delivery-form'
+)
 
-  const select = document.getElementById(
-    'courier-select'
-  )
+const qrModal = document.getElementById(
+  'qr-modal'
+)
 
-  const { data, error } = await supabase
-    .from('couriers')
-    .select('*')
+const qrBox = document.getElementById(
+  'qrcode'
+)
 
-  if(error) {
-    console.log(error)
-    return
-  }
-
-  select.innerHTML = `
-    <option value="">
-      Pilih Kurir
-    </option>
-  `
-
-  data.forEach(courier => {
-
-    select.innerHTML += `
-      <option value="${courier.nama}">
-        ${courier.nama}
-      </option>
-    `
-  })
-}
+/* ======================================================
+   LOAD DELIVERIES
+====================================================== */
 
 async function loadDeliveries() {
 
@@ -69,7 +48,7 @@ async function loadDeliveries() {
     })
 
   // SEARCH
-  if(searchInput.value) {
+  if(searchInput && searchInput.value) {
 
     query = query.ilike(
       'patient_name',
@@ -78,7 +57,7 @@ async function loadDeliveries() {
   }
 
   // DATE FILTER
-  if(dateFilter.value) {
+  if(dateFilter && dateFilter.value) {
 
     query = query.gte(
       'created_at',
@@ -96,9 +75,26 @@ async function loadDeliveries() {
   renderDeliveries(data)
 }
 
+/* ======================================================
+   RENDER TABLE
+====================================================== */
+
 function renderDeliveries(data) {
 
   tbody.innerHTML = ''
+
+  if(data.length === 0) {
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" class="text-center py-10 text-slate-400">
+          Belum ada data pengantaran
+        </td>
+      </tr>
+    `
+
+    return
+  }
 
   data.forEach(item => {
 
@@ -109,6 +105,7 @@ function renderDeliveries(data) {
     `
 
     if(item.status === 'on_delivery') {
+
       badge = `
         <span class="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700">
           Diantar
@@ -117,6 +114,7 @@ function renderDeliveries(data) {
     }
 
     if(item.status === 'completed') {
+
       badge = `
         <span class="px-3 py-1 rounded-full text-xs bg-green-100 text-green-700">
           Selesai
@@ -169,14 +167,14 @@ function renderDeliveries(data) {
 
             <button
               onclick="showQR('${item.qr_token}')"
-              class="bg-slate-100 px-3 py-2 rounded-lg text-sm"
+              class="bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg text-sm"
             >
               QR
             </button>
 
             <button
               onclick="deleteDelivery('${item.id}')"
-              class="bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm"
+              class="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-2 rounded-lg text-sm"
             >
               Hapus
             </button>
@@ -190,18 +188,144 @@ function renderDeliveries(data) {
   })
 }
 
+/* ======================================================
+   LOAD COURIERS
+====================================================== */
+
+async function loadCouriers() {
+
+  const select = document.getElementById(
+    'courier-select'
+  )
+
+  const { data, error } = await supabase
+    .from('couriers')
+    .select('*')
+
+  if(error) {
+    console.log(error)
+    return
+  }
+
+  select.innerHTML = `
+    <option value="">
+      Pilih Kurir
+    </option>
+  `
+
+  data.forEach(courier => {
+
+    select.innerHTML += `
+      <option value="${courier.nama}">
+        ${courier.nama}
+      </option>
+    `
+  })
+}
+
+/* ======================================================
+   OPEN MODAL
+====================================================== */
+
+document
+.getElementById('btn-new-delivery')
+.addEventListener('click', async () => {
+
+  deliveryModal.classList.remove('hidden')
+  deliveryModal.classList.add('flex')
+
+  await loadCouriers()
+})
+
+/* ======================================================
+   CLOSE DELIVERY MODAL
+====================================================== */
+
+document
+.getElementById('close-delivery-modal')
+.addEventListener('click', () => {
+
+  deliveryModal.classList.add('hidden')
+})
+
+/* ======================================================
+   CLOSE QR MODAL
+====================================================== */
+
+document
+.getElementById('close-qr-modal')
+.addEventListener('click', () => {
+
+  qrModal.classList.add('hidden')
+})
+
+/* ======================================================
+   CREATE DELIVERY
+====================================================== */
+
+if(deliveryForm) {
+
+  deliveryForm.addEventListener(
+    'submit',
+    async (e) => {
+
+      e.preventDefault()
+
+      const patientName =
+        document.getElementById('patient-name').value
+
+      const patientPhone =
+        document.getElementById('patient-phone').value
+
+      const kelurahan =
+        document.getElementById('kelurahan').value
+
+      const address =
+        document.getElementById('address').value
+
+      const courierName =
+        document.getElementById('courier-select').value
+
+      const qrToken = crypto.randomUUID()
+
+      const { error } = await supabase
+        .from('deliveries')
+        .insert([
+          {
+            patient_name: patientName,
+            patient_phone: patientPhone,
+            kelurahan: kelurahan,
+            address: address,
+            courier_name: courierName,
+            qr_token: qrToken,
+            status: 'pending'
+          }
+        ])
+
+      if(error) {
+
+        alert(error.message)
+        return
+      }
+
+      alert('Pengantaran berhasil dibuat 🎉')
+
+      deliveryForm.reset()
+
+      deliveryModal.classList.add('hidden')
+
+      loadDeliveries()
+  })
+}
+
+/* ======================================================
+   SHOW QR
+====================================================== */
+
 window.showQR = (token) => {
 
-  const modal = document.getElementById(
-    'qr-modal'
-  )
-
-  modal.classList.remove('hidden')
-  modal.classList.add('flex')
-
-  const qrBox = document.getElementById(
-    'qrcode'
-  )
+  qrModal.classList.remove('hidden')
+  qrModal.classList.add('flex')
 
   qrBox.innerHTML = ''
 
@@ -212,15 +336,9 @@ window.showQR = (token) => {
   })
 }
 
-document
-.getElementById('close-qr-modal')
-.addEventListener('click', () => {
-
-  document
-  .getElementById('qr-modal')
-  .classList.add('hidden')
-
-})
+/* ======================================================
+   DELETE DELIVERY
+====================================================== */
 
 window.deleteDelivery = async (id) => {
 
@@ -236,6 +354,7 @@ window.deleteDelivery = async (id) => {
     .eq('id', id)
 
   if(error) {
+
     alert(error.message)
     return
   }
@@ -243,65 +362,28 @@ window.deleteDelivery = async (id) => {
   loadDeliveries()
 }
 
-searchInput.addEventListener(
-  'input',
-  loadDeliveries
-)
+/* ======================================================
+   FILTER EVENTS
+====================================================== */
 
-dateFilter.addEventListener(
-  'change',
-  loadDeliveries
-)
+if(searchInput) {
+
+  searchInput.addEventListener(
+    'input',
+    loadDeliveries
+  )
+}
+
+if(dateFilter) {
+
+  dateFilter.addEventListener(
+    'change',
+    loadDeliveries
+  )
+}
+
+/* ======================================================
+   INITIAL LOAD
+====================================================== */
 
 loadDeliveries()
-
-deliveryForm.addEventListener(
-  'submit',
-  async (e) => {
-
-    e.preventDefault()
-
-    const patientName =
-      document.getElementById('patient-name').value
-
-    const patientPhone =
-      document.getElementById('patient-phone').value
-
-    const kelurahan =
-      document.getElementById('kelurahan').value
-
-    const address =
-      document.getElementById('address').value
-
-    const courierName =
-      document.getElementById('courier-select').value
-
-    const qrToken = crypto.randomUUID()
-
-    const { error } = await supabase
-      .from('deliveries')
-      .insert([
-        {
-          patient_name: patientName,
-          patient_phone: patientPhone,
-          kelurahan: kelurahan,
-          address: address,
-          courier_name: courierName,
-          qr_token: qrToken,
-          status: 'pending'
-        }
-      ])
-
-    if(error) {
-      alert(error.message)
-      return
-    }
-
-    alert('Pengantaran berhasil dibuat')
-
-    deliveryForm.reset()
-
-    deliveryModal.classList.add('hidden')
-
-    loadDeliveries()
-})
