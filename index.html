@@ -10,6 +10,7 @@
 </head>
 <body class="text-slate-800 min-h-screen flex overflow-hidden">
     
+    <!-- Sidebar / Navigasi Tabs -->
     <aside class="w-64 bg-white shadow-md z-20 flex flex-col h-screen">
         <div class="p-6 border-b border-slate-100">
             <h1 class="text-2xl font-bold text-green-700">MedLogix</h1>
@@ -28,8 +29,10 @@
         </nav>
     </aside>
 
+    <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
         
+        <!-- Header & Search -->
         <header class="bg-white px-8 py-4 border-b border-slate-200 flex justify-between items-center shadow-sm z-10">
             <div class="flex items-center w-96 bg-slate-100 rounded-full px-4 py-2 border border-slate-200 focus-within:border-green-500 focus-within:bg-white transition-all">
                 <span class="material-symbols-outlined text-slate-400 mr-2 text-xl">search</span>
@@ -45,6 +48,7 @@
             </div>
         </header>
 
+        <!-- TAB 1: ORDERS (PENGANTARAN) -->
         <div id="tab-orders" class="tab-content flex-1 p-8 overflow-y-auto">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200">
                 <table class="w-full text-left border-collapse">
@@ -56,12 +60,12 @@
                             <th class="px-4 py-3 text-xs text-slate-500 uppercase text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="order-table-body" class="text-sm">
-                        </tbody>
+                    <tbody id="order-table-body" class="text-sm"></tbody>
                 </table>
             </div>
         </div>
 
+        <!-- TAB 2: COURIERS -->
         <div id="tab-couriers" class="tab-content hidden flex-1 p-8 overflow-y-auto bg-slate-50">
             <h2 class="text-2xl font-bold mb-4">Daftar Mitra Kurir</h2>
             <div class="bg-white rounded-xl shadow-sm border border-slate-200">
@@ -79,6 +83,7 @@
             </div>
         </div>
 
+        <!-- TAB 3: FEES (ONGKIR) -->
         <div id="tab-fees" class="tab-content hidden flex-1 p-8 overflow-y-auto bg-slate-50">
             <h2 class="text-2xl font-bold mb-4">Tarif Kelurahan Kota Ternate</h2>
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 max-w-2xl">
@@ -96,6 +101,7 @@
         </div>
     </main>
 
+    <!-- MODAL: FORM PENGANTARAN BARU -->
     <div id="dispatchModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl max-w-lg w-full shadow-2xl flex flex-col max-h-[90vh]">
             <div class="p-6 border-b flex justify-between items-center">
@@ -111,7 +117,7 @@
                             <input type="text" name="resep[]" placeholder="Contoh: RES-001" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm focus:border-green-500 outline-none border">
                         </div>
                         <button type="button" id="btn-tambah-resep" class="mt-2 text-xs font-bold text-green-700 flex items-center gap-1 hover:underline">
-                            <span class="material-symbols-outlined text-[16px]">add_circle</span> Tambah Obat Lain untuk Pasien ini
+                            <span class="material-symbols-outlined text-[16px]">add_circle</span> Tambah Obat Lain
                         </button>
                     </div>
 
@@ -127,18 +133,18 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Kelurahan Tujuan (Ternate)</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kelurahan Tujuan (Ternate)</label>
                         <select id="kelurahan_select" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border bg-white">
                             <option value="">Memuat data kelurahan...</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Detail Alamat / Patokan Rumah</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Detail Alamat</label>
                         <textarea id="alamat" rows="2" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm border"></textarea>
                     </div>
 
                     <button type="submit" class="w-full bg-green-700 text-white py-3 rounded-lg font-bold hover:bg-green-800 shadow-md">
-                        Assign Kurir Otomatis & Buat QR
+                        Simpan & Buat QR
                     </button>
                 </form>
 
@@ -148,19 +154,18 @@
                         <p id="assigned-courier-text" class="text-sm text-green-700 mt-1"></p>
                     </div>
                     <div id="qrcode" class="p-2 bg-white rounded-lg shadow-sm border"></div>
-                    <p class="text-xs text-slate-400 mt-2">Scan dengan HP Mitra</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL: EDIT STATUS & VIEW QR -->
     <div id="actionModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl w-96 shadow-2xl p-6 text-center">
-            <h3 class="text-lg font-bold mb-4">Manajemen Pengantaran</h3>
+            <h3 class="text-lg font-bold mb-4">Aksi Pengantaran</h3>
+            <div id="re-qr-container" class="flex justify-center mb-4"></div>
             
-            <div id="re-qr-container" class="flex justify-center mb-4 hidden"></div>
-            
-            <p class="text-sm font-bold text-slate-600 mb-2">Ubah Status Manual</p>
+            <p class="text-sm font-bold text-slate-600 mb-2">Ubah Status</p>
             <div class="flex gap-2 justify-center mb-6">
                 <button onclick="updateStatus('Pending')" class="px-3 py-1 bg-slate-200 rounded text-sm font-bold hover:bg-slate-300">Pending</button>
                 <button onclick="updateStatus('In Transit')" class="px-3 py-1 bg-blue-200 text-blue-800 rounded text-sm font-bold hover:bg-blue-300">Diantar</button>
@@ -173,13 +178,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <script type="module">
-        import { supabase } from './js/supabase-config.js';
+        // IMPORT LANGSUNG DARI CDN (Anti Gagal)
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-        // --- MANAJEMEN TAB & UI ---
+        // MASUKKAN KREDENSIAL SUPABASE ANDA DI SINI
+        const supabaseUrl = 'https://URL_SUPABASE_ANDA.supabase.co';
+        const supabaseKey = 'ANON_KEY_ANDA';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // --- MANAJEMEN TAB ---
         const tabs = ['orders', 'couriers', 'fees'];
         tabs.forEach(tab => {
             document.getElementById(`nav-${tab}`).addEventListener('click', (e) => {
-                // Reset styling navigasi
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.classList.remove('bg-green-50', 'text-green-700');
                     btn.classList.add('text-slate-600');
@@ -187,18 +197,15 @@
                 e.currentTarget.classList.remove('text-slate-600');
                 e.currentTarget.classList.add('bg-green-50', 'text-green-700');
 
-                // Sembunyikan semua tab
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-                // Tampilkan tab terpilih
                 document.getElementById(`tab-${tab}`).classList.remove('hidden');
 
-                // Tampilkan/Sembunyikan tombol Header berdasarkan tab
                 document.getElementById('btn-new-dispatch').classList.toggle('hidden', tab !== 'orders');
                 document.getElementById('btn-add-courier').classList.toggle('hidden', tab !== 'couriers');
             });
         });
 
-        // Modals Toggle
+        // --- FITUR MODAL ---
         document.querySelectorAll('.close-modal').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.getElementById('dispatchModal').classList.add('hidden');
@@ -211,11 +218,9 @@
             document.getElementById('dispatchForm').classList.remove('hidden');
             document.getElementById('qrContainer').classList.add('hidden');
             document.getElementById('dispatchForm').reset();
-            // Reset kolom resep
             document.getElementById('resep-container').innerHTML = `<input type="text" name="resep[]" placeholder="Contoh: RES-001" required class="w-full rounded-md border-slate-300 px-3 py-2 text-sm focus:border-green-500 outline-none border">`;
         });
 
-        // Tambah Input Resep Dinamis
         document.getElementById('btn-tambah-resep').addEventListener('click', () => {
             const input = document.createElement('input');
             input.type = 'text';
@@ -235,8 +240,7 @@
             });
         });
 
-
-        // --- FUNGSI LOAD DATA DATABASE ---
+        // --- FUNGSI LOAD DATA SUPABASE ---
         async function loadFees() {
             const { data } = await supabase.from('kelurahan_fees').select('*').order('kecamatan');
             const tbody = document.getElementById('fee-table-body');
@@ -245,13 +249,7 @@
             
             if(data) {
                 data.forEach(fee => {
-                    // Isi Tabel
-                    tbody.innerHTML += `<tr class="border-b border-slate-100">
-                        <td class="px-4 py-3">${fee.kecamatan}</td>
-                        <td class="px-4 py-3 font-bold">${fee.nama_kelurahan}</td>
-                        <td class="px-4 py-3 text-right">Rp ${fee.tarif.toLocaleString()}</td>
-                    </tr>`;
-                    // Isi Dropdown Form
+                    tbody.innerHTML += `<tr class="border-b border-slate-100"><td class="px-4 py-3">${fee.kecamatan}</td><td class="px-4 py-3 font-bold">${fee.nama_kelurahan}</td><td class="px-4 py-3 text-right">Rp ${fee.tarif.toLocaleString()}</td></tr>`;
                     select.innerHTML += `<option value="${fee.nama_kelurahan}|${fee.tarif}">${fee.nama_kelurahan} - Rp ${fee.tarif.toLocaleString()}</option>`;
                 });
             }
@@ -264,12 +262,7 @@
             if(data) {
                 data.forEach(c => {
                     const statusColor = c.status === 'Tersedia' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
-                    tbody.innerHTML += `<tr class="border-b border-slate-100">
-                        <td class="px-4 py-3 font-bold">${c.nama_kurir}</td>
-                        <td class="px-4 py-3">${c.no_whatsapp || '-'}</td>
-                        <td class="px-4 py-3"><span class="${statusColor} px-2 py-1 rounded text-xs font-bold">${c.status}</span></td>
-                        <td class="px-4 py-3 text-xs text-slate-500">${new Date(c.last_assigned_at).toLocaleString('id-ID')}</td>
-                    </tr>`;
+                    tbody.innerHTML += `<tr class="border-b border-slate-100"><td class="px-4 py-3 font-bold">${c.nama_kurir}</td><td class="px-4 py-3">${c.no_whatsapp || '-'}</td><td class="px-4 py-3"><span class="${statusColor} px-2 py-1 rounded text-xs font-bold">${c.status}</span></td><td class="px-4 py-3 text-xs text-slate-500">${new Date(c.last_assigned_at).toLocaleString('id-ID')}</td></tr>`;
                 });
             }
         }
@@ -287,22 +280,12 @@
 
                     tbody.innerHTML += `
                         <tr class="border-b border-slate-100 hover:bg-slate-50">
-                            <td class="px-4 py-3">
-                                <p class="font-bold text-green-700 break-words max-w-[150px]">${order.order_numbers}</p>
-                                <p class="font-medium">${order.patient_name}</p>
-                            </td>
-                            <td class="px-4 py-3">
-                                <p class="font-bold">${order.kelurahan}</p>
-                                <p class="text-xs text-slate-500 truncate max-w-[200px]">${order.dropoff_address}</p>
-                                <p class="text-xs font-bold text-amber-600 mt-1">Ongkir: Rp ${order.tarif.toLocaleString()}</p>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="mb-1">${badge}</div>
-                                <p class="text-xs font-bold text-slate-600">${order.courier_name || 'Belum Diambil'}</p>
-                            </td>
+                            <td class="px-4 py-3"><p class="font-bold text-green-700 max-w-[150px]">${order.order_numbers}</p><p class="font-medium">${order.patient_name}</p></td>
+                            <td class="px-4 py-3"><p class="font-bold">${order.kelurahan}</p><p class="text-xs text-slate-500 truncate max-w-[200px]">${order.dropoff_address}</p><p class="text-xs font-bold text-amber-600 mt-1">Ongkir: Rp ${order.tarif.toLocaleString()}</p></td>
+                            <td class="px-4 py-3"><div class="mb-1">${badge}</div><p class="text-xs font-bold text-slate-600">${order.courier_name || 'Belum Diambil'}</p></td>
                             <td class="px-4 py-3 text-right">
-                                <button onclick="window.openActionModal('${order.id}', '${order.status}')" class="text-slate-400 hover:text-green-600 p-1">
-                                    <span class="material-symbols-outlined">more_vert</span>
+                                <button onclick="window.openActionModal('${order.id}')" class="text-slate-400 hover:text-green-600 p-1 bg-slate-100 rounded">
+                                    <span class="material-symbols-outlined">qr_code_2</span>
                                 </button>
                             </td>
                         </tr>
@@ -311,55 +294,30 @@
             }
         }
 
-        // --- SISTEM SUBMIT & ANTRIAN OTOMATIS ---
+        // --- SUBMIT PENGANTARAN ---
         document.getElementById('dispatchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Kumpulkan semua No Resep dari input dinamis
             const inputs = document.querySelectorAll('input[name="resep[]"]');
-            const arrResep = Array.from(inputs).map(i => i.value).filter(i => i.trim() !== "");
-            const joinedResep = arrResep.join(", "); // Gabung jadi 1 string
+            const joinedResep = Array.from(inputs).map(i => i.value).filter(i => i.trim() !== "").join(", ");
+            const [kelurahan, tarifStr] = document.getElementById('kelurahan_select').value.split("|");
+            
+            const { data: couriers } = await supabase.from('couriers').select('*').eq('status', 'Tersedia').order('last_assigned_at', { ascending: true }).limit(1);
+            let courierId = null, courierName = null, statusPengantaran = 'Pending', infoTeks = "Menunggu Kurir Scan Manual.";
 
-            // Pisahkan Kelurahan dan Tarif dari Dropdown
-            const kelurahanVal = document.getElementById('kelurahan_select').value;
-            const [kelurahan, tarifStr] = kelurahanVal.split("|");
-            const tarif = parseInt(tarifStr);
-
-            // LOGIKA ANTRIAN KURIR (Cari Kurir Tersedia, Urutkan dari yang paling lama menganggur)
-            const { data: couriers } = await supabase.from('couriers')
-                .select('*').eq('status', 'Tersedia')
-                .order('last_assigned_at', { ascending: true })
-                .limit(1);
-
-            let courierId = null;
-            let courierName = null;
-            let statusPengantaran = 'Pending';
-            let infoTeks = "Tugas Dibuat. Menunggu Kurir Scan Manual.";
-
-            // Jika ada kurir yang "Tersedia", langsung pasangkan (Assign)
             if(couriers && couriers.length > 0) {
-                courierId = couriers[0].id;
-                courierName = couriers[0].nama_kurir;
-                statusPengantaran = 'In Transit';
-                infoTeks = `Kurir Terpilih: <b>${courierName}</b> (Otomatis ditugaskan)`;
-
-                // Update status kurir jadi Sibuk
-                await supabase.from('couriers').update({ 
-                    status: 'Sibuk', 
-                    last_assigned_at: new Date().toISOString() 
-                }).eq('id', courierId);
-            } else {
-                infoTeks = "<b>Peringatan:</b> Semua kurir sedang sibuk/nonaktif. Status tertahan di Pending.";
+                courierId = couriers[0].id; courierName = couriers[0].nama_kurir; statusPengantaran = 'In Transit';
+                infoTeks = `Kurir Terpilih: <b>${courierName}</b>`;
+                await supabase.from('couriers').update({ status: 'Sibuk', last_assigned_at: new Date().toISOString() }).eq('id', courierId);
             }
 
-            // Simpan Data Pengantaran ke Database
             const payload = {
                 order_numbers: joinedResep,
                 patient_name: document.getElementById('nama_pasien').value,
                 patient_phone: document.getElementById('no_whatsapp').value,
                 kelurahan: kelurahan,
                 dropoff_address: document.getElementById('alamat').value,
-                tarif: tarif,
+                tarif: parseInt(tarifStr),
                 status: statusPengantaran,
                 courier_id: courierId,
                 courier_name: courierName
@@ -368,63 +326,40 @@
             const { data, error } = await supabase.from('deliveries').insert([payload]).select();
             if (error) return alert('Gagal: ' + error.message);
 
-            // Tampilkan QR
             document.getElementById('dispatchForm').classList.add('hidden');
             document.getElementById('qrContainer').classList.remove('hidden');
             document.getElementById('assigned-courier-text').innerHTML = infoTeks;
             
             document.getElementById('qrcode').innerHTML = "";
-            new QRCode(document.getElementById('qrcode'), {
-                text: `${window.location.origin}/kurir-detail.html?id=${data[0].id}`,
-                width: 200, height: 200
-            });
-
-            loadOrders(); // Refresh Data
+            new QRCode(document.getElementById('qrcode'), { text: `${window.location.origin}/kurir-detail.html?id=${data[0].id}`, width: 200, height: 200 });
+            loadOrders();
         });
 
-        // --- GLOBAL FUNCTIONS UNTUK TOMBOL ACTION (VIEW QR & EDIT CRUD) ---
+        // --- GLOBAL ACTION MODAL ---
         let selectedOrderId = null;
-        window.openActionModal = (id, currentStatus) => {
+        window.openActionModal = (id) => {
             selectedOrderId = id;
-            const modal = document.getElementById('actionModal');
-            modal.classList.remove('hidden');
-
-            // Generate ulang QR Code di modal Action
+            document.getElementById('actionModal').classList.remove('hidden');
             const qrBox = document.getElementById('re-qr-container');
             qrBox.innerHTML = "";
-            qrBox.classList.remove('hidden');
-            new QRCode(qrBox, {
-                text: `${window.location.origin}/kurir-detail.html?id=${id}`,
-                width: 150, height: 150
-            });
+            new QRCode(qrBox, { text: `${window.location.origin}/kurir-detail.html?id=${id}`, width: 150, height: 150 });
         };
 
         window.updateStatus = async (newStatus) => {
             if(!selectedOrderId) return;
             await supabase.from('deliveries').update({ status: newStatus }).eq('id', selectedOrderId);
-            
-            // Jika diset Selesai manual, bebaskan kurirnya (Kembali 'Tersedia')
             if(newStatus === 'Completed') {
                 const { data } = await supabase.from('deliveries').select('courier_id').eq('id', selectedOrderId).single();
                 if(data && data.courier_id) {
                     await supabase.from('couriers').update({ status: 'Tersedia' }).eq('id', data.courier_id);
                 }
             }
-            
             document.getElementById('actionModal').classList.add('hidden');
             loadOrders();
         };
 
-        // Realtime Listener
-        supabase.channel('db-changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'deliveries' }, payload => { loadOrders(); })
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'couriers' }, payload => { loadCouriers(); })
-            .subscribe();
-
-        // Init
-        loadFees();
-        loadCouriers();
-        loadOrders();
+        // --- INIT ---
+        loadFees(); loadCouriers(); loadOrders();
     </script>
 </body>
 </html>
