@@ -363,23 +363,137 @@ async (id) => {
   loadDeliveries()
 }
 /* ======================================================
-   EDIT
+   EDIT MODAL ELEMENT
+====================================================== */
+const editDeliveryModal =
+document.getElementById(
+  'edit-delivery-modal'
+)
+const closeEditDeliveryModal =
+document.getElementById(
+  'close-edit-delivery-modal'
+)
+const editDeliveryForm =
+document.getElementById(
+  'edit-delivery-form'
+)
+/* ======================================================
+   CLOSE EDIT MODAL
+====================================================== */
+closeEditDeliveryModal
+?.addEventListener(
+  'click',
+  () => {
+  editDeliveryModal
+  .classList.remove(
+    'flex'
+  )
+  editDeliveryModal
+  .classList.add(
+    'hidden'
+  )
+})
+/* ======================================================
+   OPEN EDIT
 ====================================================== */
 window.editDelivery =
 async (id) => {
+  const {
+    data
+  } = await supabase
+  .from('deliveries')
+  .select('*')
+  .eq('id', id)
+  .single()
+  if(!data) return
+  document.getElementById(
+    'edit-delivery-id'
+  ).value = data.id
+  document.getElementById(
+    'edit-patient-name'
+  ).value = data.patient_name
+  document.getElementById(
+    'edit-patient-phone'
+  ).value = data.patient_phone
+  document.getElementById(
+    'edit-address'
+  ).value = data.address
+  document.getElementById(
+    'edit-status'
+  ).value = data.status
+  document.getElementById(
+    'edit-ongkir'
+  ).value = data.ongkir
+  editDeliveryModal
+  .classList.remove(
+    'hidden'
+  )
+  editDeliveryModal
+  .classList.add(
+    'flex'
+  )
+}
+/* ======================================================
+   UPDATE DELIVERY
+====================================================== */
+editDeliveryForm
+?.addEventListener(
+  'submit',
+  async (e) => {
+  e.preventDefault()
+  const id =
+    document.getElementById(
+      'edit-delivery-id'
+    ).value
+  const patient_name =
+    document.getElementById(
+      'edit-patient-name'
+    ).value
+  const patient_phone =
+    document.getElementById(
+      'edit-patient-phone'
+    ).value
+  const address =
+    document.getElementById(
+      'edit-address'
+    ).value
   const status =
-    prompt(
-      'Status: pending / on_delivery / completed'
-    )
-  if(!status) return
-  await supabase
+    document.getElementById(
+      'edit-status'
+    ).value
+  const ongkir =
+    document.getElementById(
+      'edit-ongkir'
+    ).value
+  const {
+    error
+  } = await supabase
   .from('deliveries')
   .update({
-    status
+    patient_name,
+    patient_phone,
+    address,
+    status,
+    ongkir
   })
   .eq('id', id)
+  if(error) {
+    alert(error.message)
+    return
+  }
+  alert(
+    'Pengantaran berhasil diupdate'
+  )
+  editDeliveryModal
+  .classList.remove(
+    'flex'
+  )
+  editDeliveryModal
+  .classList.add(
+    'hidden'
+  )
   loadDeliveries()
-}
+})
 /* ======================================================
    QR DETAIL
 ====================================================== */
