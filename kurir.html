@@ -346,6 +346,40 @@
       renderTasks(data || [])
     }
 
+    // GPS TRACKING
+function startGPS() {
+  if(!navigator.geolocation) {
+    return
+  }
+  navigator.geolocation.watchPosition(
+    async (position) => {
+      const latitude =
+        position.coords.latitude
+      const longitude =
+        position.coords.longitude
+      await supabase
+      .from('couriers')
+      .update({
+        latitude,
+        longitude
+      })
+      .eq(
+        'id',
+        courierSession.id
+      )
+    },
+    (err) => {
+      console.log(err)
+    },
+    {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 5000
+    }
+  )
+}
+startGPS()
+
     // RENDER TASKS
 
     function renderTasks(data) {
