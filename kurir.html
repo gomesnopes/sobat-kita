@@ -47,15 +47,25 @@
   <script type="module">
     import { supabase }
     from './assets/js/supabase.js'
-    const container =
-      document.getElementById(
-        'tasks-container'
-      )
+    const courierSession =
+JSON.parse(
+  localStorage.getItem(
+    'sobatkita_courier'
+  )
+)
+if(!courierSession) {
+  window.location.href =
+    './login-kurir.html'
+}
     async function loadTasks() {
       const { data, error } =
         await supabase
         .from('deliveries')
-        .select('*')
+.select('*')
+.eq(
+  'courier_id',
+  courierSession.id
+)
         .neq('status', 'completed')
         .order('created_at', {
           ascending: false
