@@ -398,6 +398,10 @@ closeEditDeliveryModal
 ====================================================== */
 window.editDelivery =
 async (id) => {
+   console.log(
+  'EDIT CLICKED',
+  id
+)
   const {
     data
   } = await supabase
