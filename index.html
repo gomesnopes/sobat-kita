@@ -43,14 +43,51 @@
 </head>
 
 <body class="bg-slate-100">
+  <script>
+const adminSession =
+JSON.parse(
+  localStorage.getItem(
+    'sobatkita_admin'
+  )
+)
+if(!adminSession) {
+  window.location.href =
+    './login-admin.html'
+}
+</script>
 
   <div class="flex h-screen overflow-hidden">
 
     <!-- SIDEBAR -->
 
     <aside
-      class="w-64 bg-white border-r flex flex-col"
+      class="bg-white border-r transition-all duration-300 w-72"
+id="sidebar"
     >
+      <div
+  class="p-5 border-b flex items-center justify-between"
+>
+  <div class="flex items-center gap-3">
+    <img
+      src="./logo.png"
+      class="w-12 h-12 object-contain"
+    >
+    <div>
+      <h1 class="font-bold text-xl text-green-700">
+        Sobat Kita
+      </h1>
+      <p class="text-xs text-slate-500">
+        Admin Dashboard
+      </p>
+    </div>
+  </div>
+  <button
+    id="toggle-sidebar"
+    class="bg-slate-100 p-2 rounded-xl"
+  >
+    ☰
+  </button>
+</div>
 
       <div class="p-6 border-b">
 
