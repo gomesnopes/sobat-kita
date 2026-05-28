@@ -9,11 +9,14 @@
   <title>
     Sobat Kita Dashboard
   </title>
+  <!-- TAILWIND -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FONT -->
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   >
+  <!-- QR -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     body {
@@ -25,7 +28,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex">
+<body class="min-h-screen overflow-hidden">
   <!-- AUTH -->
   <script>
     const adminSession =
@@ -39,218 +42,267 @@
         './login-admin.html'
     }
   </script>
-  <!-- SIDEBAR -->
-  <aside
-    id="sidebar"
-    class="w-72 bg-green-800 text-white flex flex-col"
-  >
-    <!-- LOGO -->
-    <div
-      class="p-6 border-b border-white/10"
+  <div class="flex h-screen">
+    <!-- SIDEBAR -->
+    <aside
+      class="w-72 bg-green-800 text-white flex flex-col shrink-0"
     >
-      <div class="flex items-center gap-4">
-        <img
-          src="./icon-192.png"
-          class="w-14 h-14 object-contain"
-        >
-        <div>
-          <h1 class="text-2xl font-bold">
-            Sobat Kita
-          </h1>
-          <p class="text-sm text-green-100">
-            Dashboard Admin
-          </p>
-        </div>
-      </div>
-    </div>
-    <!-- MENU -->
-    <div class="flex-1 p-4 space-y-2">
-      <button
-        id="menu-deliveries"
-        class="sidebar-menu active w-full flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-white/10 transition"
-      >
-        <span class="text-2xl">
-          🚚
-        </span>
-        <span class="font-medium">
-          Pengantaran
-        </span>
-      </button>
-      <button
-        id="menu-zones"
-        class="sidebar-menu superadmin-only w-full flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-white/10 transition"
-      >
-        <span class="text-2xl">
-          📍
-        </span>
-        <span class="font-medium">
-          Master Ongkir
-        </span>
-      </button>
-      <button
-        id="menu-couriers"
-        class="sidebar-menu superadmin-only w-full flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-white/10 transition"
-      >
-        <span class="text-2xl">
-          🛵
-        </span>
-        <span class="font-medium">
-          Master Kurir
-        </span>
-      </button>
-    </div>
-    <!-- FOOTER -->
-    <div
-      class="p-4 border-t border-white/10"
-    >
-      <button
-        id="logout-btn"
-        class="w-full bg-red-500 hover:bg-red-600 transition py-4 rounded-2xl font-semibold"
-      >
-        Logout
-      </button>
-    </div>
-  </aside>
-  <!-- MAIN -->
-  <main class="flex-1 overflow-y-auto">
-    <!-- HEADER -->
-    <div
-      class="bg-white px-8 py-6 border-b sticky top-0 z-30"
-    >
+      <!-- LOGO -->
       <div
-        class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5"
+        class="p-6 border-b border-white/10"
       >
-        <div>
-          <h1
-            id="page-title"
-            class="text-3xl font-bold text-slate-800"
+        <div class="flex items-center gap-4">
+          <img
+            src="./icon-192.png"
+            class="w-14 h-14 object-contain"
           >
-            Dashboard
-          </h1>
-          <p class="text-slate-500 mt-1">
-            Selamat datang di Sobat Kita
-          </p>
-        </div>
-        <!-- FILTER -->
-        <div
-          class="flex flex-col md:flex-row gap-3"
-        >
-          <input
-            type="text"
-            id="search-input"
-            placeholder="Cari pasien..."
-            class="bg-slate-100 rounded-2xl px-5 py-3 outline-none"
-          >
-          <input
-            type="date"
-            id="start-date"
-            class="bg-slate-100 rounded-2xl px-5 py-3 outline-none"
-          >
-          <input
-            type="date"
-            id="end-date"
-            class="bg-slate-100 rounded-2xl px-5 py-3 outline-none"
-          >
-        </div>
-      </div>
-    </div>
-    <!-- CONTENT -->
-    <div class="p-8">
-      <!-- ANALYTICS -->
-      <div
-        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8"
-      >
-        <div
-          class="bg-white rounded-3xl p-6 shadow-sm"
-        >
-          <p class="text-slate-500">
-            Total Pengantaran
-          </p>
-          <h2
-            id="total-deliveries"
-            class="text-4xl font-bold mt-3"
-          >
-            0
-          </h2>
-        </div>
-        <div
-          class="bg-white rounded-3xl p-6 shadow-sm"
-        >
-          <p class="text-slate-500">
-            Sedang Diantar
-          </p>
-          <h2
-            id="on-delivery-count"
-            class="text-4xl font-bold text-blue-600 mt-3"
-          >
-            0
-          </h2>
-        </div>
-        <div
-          class="bg-white rounded-3xl p-6 shadow-sm"
-        >
-          <p class="text-slate-500">
-            Selesai
-          </p>
-          <h2
-            id="completed-count"
-            class="text-4xl font-bold text-green-600 mt-3"
-          >
-            0
-          </h2>
-        </div>
-        <div
-          class="bg-white rounded-3xl p-6 shadow-sm"
-        >
-          <p class="text-slate-500">
-            Kurir Online
-          </p>
-          <h2
-            id="online-couriers"
-            class="text-4xl font-bold text-orange-500 mt-3"
-          >
-            0
-          </h2>
-        </div>
-      </div>
-      <!-- DELIVERIES -->
-      <section id="deliveries-section">
-        <div
-          class="flex items-center justify-between mb-6"
-        >
           <div>
-            <h2 class="text-2xl font-bold">
-              Data Pengantaran
-            </h2>
-            <p class="text-slate-500 mt-1">
-              Monitoring pengantaran obat
+            <h1 class="text-2xl font-bold">
+              Sobat Kita
+            </h1>
+            <p class="text-sm text-green-100 mt-1">
+              Dashboard Admin
             </p>
           </div>
-          <button
-            id="btn-new-delivery"
-            class="bg-green-700 hover:bg-green-800 text-white px-6 py-4 rounded-2xl font-semibold"
-          >
-            + Pengantaran Baru
-          </button>
         </div>
-        <div
-          class="bg-white rounded-3xl shadow-sm overflow-hidden"
+      </div>
+      <!-- MENU -->
+      <div class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <button
+          id="menu-deliveries"
+          class="sidebar-menu active w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition hover:bg-white/10"
         >
-          <div class="overflow-x-auto">
+          <span class="text-2xl">
+            🚚
+          </span>
+          <span class="font-medium">
+            Pengantaran
+          </span>
+        </button>
+        <button
+          id="menu-zones"
+          class="sidebar-menu superadmin-only w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition hover:bg-white/10"
+        >
+          <span class="text-2xl">
+            📍
+          </span>
+          <span class="font-medium">
+            Master Ongkir
+          </span>
+        </button>
+        <button
+          id="menu-couriers"
+          class="sidebar-menu superadmin-only w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition hover:bg-white/10"
+        >
+          <span class="text-2xl">
+            🛵
+          </span>
+          <span class="font-medium">
+            Master Kurir
+          </span>
+        </button>
+      </div>
+      <!-- FOOTER -->
+      <div
+        class="p-4 border-t border-white/10"
+      >
+        <button
+          id="logout-btn"
+          class="w-full bg-red-500 hover:bg-red-600 transition py-4 rounded-2xl font-semibold"
+        >
+          Logout
+        </button>
+      </div>
+    </aside>
+    <!-- MAIN -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- HEADER -->
+      <div
+        class="bg-white border-b sticky top-0 z-20"
+      >
+        <div class="p-8">
+          <div
+            class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5"
+          >
+            <div>
+              <h1 class="text-3xl font-bold text-slate-800">
+                Dashboard
+              </h1>
+              <p class="text-slate-500 mt-2">
+                Monitoring pengantaran Sobat Kita
+              </p>
+            </div>
+            <!-- FILTER -->
+            <div
+              class="flex flex-col md:flex-row gap-3"
+            >
+              <input
+                type="text"
+                id="search-input"
+                placeholder="Cari pasien..."
+                class="bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+              >
+              <input
+                type="date"
+                id="start-date"
+                class="bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+              >
+              <input
+                type="date"
+                id="end-date"
+                class="bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- CONTENT -->
+      <div class="p-8">
+        <!-- ANALYTICS -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8"
+        >
+          <div
+            class="bg-white rounded-3xl p-6 shadow-sm"
+          >
+            <p class="text-slate-500">
+              Total Pengantaran
+            </p>
+            <h2
+              id="total-deliveries"
+              class="text-4xl font-bold mt-3"
+            >
+              0
+            </h2>
+          </div>
+          <div
+            class="bg-white rounded-3xl p-6 shadow-sm"
+          >
+            <p class="text-slate-500">
+              Sedang Diantar
+            </p>
+            <h2
+              id="on-delivery-count"
+              class="text-4xl font-bold text-blue-600 mt-3"
+            >
+              0
+            </h2>
+          </div>
+          <div
+            class="bg-white rounded-3xl p-6 shadow-sm"
+          >
+            <p class="text-slate-500">
+              Selesai
+            </p>
+            <h2
+              id="completed-count"
+              class="text-4xl font-bold text-green-600 mt-3"
+            >
+              0
+            </h2>
+          </div>
+          <div
+            class="bg-white rounded-3xl p-6 shadow-sm"
+          >
+            <p class="text-slate-500">
+              Kurir Online
+            </p>
+            <h2
+              id="online-couriers"
+              class="text-4xl font-bold text-orange-500 mt-3"
+            >
+              0
+            </h2>
+          </div>
+        </div>
+        <!-- DELIVERY SECTION -->
+        <section id="deliveries-section">
+          <div
+            class="flex items-center justify-between mb-6"
+          >
+            <div>
+              <h2 class="text-2xl font-bold">
+                Data Pengantaran
+              </h2>
+              <p class="text-slate-500 mt-1">
+                Monitoring pengantaran obat
+              </p>
+            </div>
+            <button
+              id="btn-new-delivery"
+              class="bg-green-700 hover:bg-green-800 text-white px-6 py-4 rounded-2xl font-semibold transition"
+            >
+              + Pengantaran Baru
+            </button>
+          </div>
+          <div
+            class="bg-white rounded-3xl shadow-sm overflow-hidden"
+          >
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-slate-50">
+                  <tr>
+                    <th class="px-6 py-5 text-left">
+                      Pasien
+                    </th>
+                    <th class="px-6 py-5 text-left">
+                      Tujuan
+                    </th>
+                    <th class="px-6 py-5 text-left">
+                      Kurir
+                    </th>
+                    <th class="px-6 py-5 text-left">
+                      Status
+                    </th>
+                    <th class="px-6 py-5 text-left">
+                      Ongkir
+                    </th>
+                    <th class="px-6 py-5 text-left">
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="delivery-table-body"
+                ></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        <!-- ZONES SECTION -->
+        <section
+          id="zones-section"
+          class="hidden"
+        >
+          <div
+            class="flex items-center justify-between mb-6"
+          >
+            <div>
+              <h2 class="text-2xl font-bold">
+                Master Ongkir
+              </h2>
+              <p class="text-slate-500 mt-1">
+                Kelola ongkir pengantaran
+              </p>
+            </div>
+            <button
+              id="btn-add-zone"
+              class="bg-green-700 text-white px-6 py-4 rounded-2xl font-semibold"
+            >
+              + Tambah Ongkir
+            </button>
+          </div>
+          <div
+            class="bg-white rounded-3xl shadow-sm overflow-hidden"
+          >
             <table class="w-full">
               <thead class="bg-slate-50">
                 <tr>
                   <th class="px-6 py-5 text-left">
-                    Pasien
+                    Kecamatan
                   </th>
                   <th class="px-6 py-5 text-left">
-                    Tujuan
-                  </th>
-                  <th class="px-6 py-5 text-left">
-                    Kurir
-                  </th>
-                  <th class="px-6 py-5 text-left">
-                    Status
+                    Kelurahan
                   </th>
                   <th class="px-6 py-5 text-left">
                     Ongkir
@@ -261,112 +313,63 @@
                 </tr>
               </thead>
               <tbody
-                id="delivery-table-body"
+                id="zones-table-body"
               ></tbody>
             </table>
           </div>
-        </div>
-      </section>
-      <!-- ZONES -->
-      <section
-        id="zones-section"
-        class="hidden"
-      >
-        <div
-          class="flex items-center justify-between mb-6"
+        </section>
+        <!-- COURIERS SECTION -->
+        <section
+          id="couriers-section"
+          class="hidden"
         >
-          <div>
-            <h2 class="text-2xl font-bold">
-              Master Ongkir
-            </h2>
-            <p class="text-slate-500 mt-1">
-              Kelola tarif pengantaran
-            </p>
-          </div>
-          <button
-            id="btn-add-zone"
-            class="bg-green-700 text-white px-6 py-4 rounded-2xl font-semibold"
+          <div
+            class="flex items-center justify-between mb-6"
           >
-            + Tambah Ongkir
-          </button>
-        </div>
-        <div
-          class="bg-white rounded-3xl shadow-sm overflow-hidden"
-        >
-          <table class="w-full">
-            <thead class="bg-slate-50">
-              <tr>
-                <th class="px-6 py-5 text-left">
-                  Kecamatan
-                </th>
-                <th class="px-6 py-5 text-left">
-                  Kelurahan
-                </th>
-                <th class="px-6 py-5 text-left">
-                  Ongkir
-                </th>
-                <th class="px-6 py-5 text-left">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody
-              id="zones-table-body"
-            ></tbody>
-          </table>
-        </div>
-      </section>
-      <!-- COURIERS -->
-      <section
-        id="couriers-section"
-        class="hidden"
-      >
-        <div
-          class="flex items-center justify-between mb-6"
-        >
-          <div>
-            <h2 class="text-2xl font-bold">
-              Master Kurir
-            </h2>
-            <p class="text-slate-500 mt-1">
-              Kelola akun kurir
-            </p>
+            <div>
+              <h2 class="text-2xl font-bold">
+                Master Kurir
+              </h2>
+              <p class="text-slate-500 mt-1">
+                Kelola akun kurir
+              </p>
+            </div>
+            <button
+              id="btn-add-courier"
+              class="bg-green-700 text-white px-6 py-4 rounded-2xl font-semibold"
+            >
+              + Tambah Kurir
+            </button>
           </div>
-          <button
-            id="btn-add-courier"
-            class="bg-green-700 text-white px-6 py-4 rounded-2xl font-semibold"
+          <div
+            class="bg-white rounded-3xl shadow-sm overflow-hidden"
           >
-            + Tambah Kurir
-          </button>
-        </div>
-        <div
-          class="bg-white rounded-3xl shadow-sm overflow-hidden"
-        >
-          <table class="w-full">
-            <thead class="bg-slate-50">
-              <tr>
-                <th class="px-6 py-5 text-left">
-                  Nama
-                </th>
-                <th class="px-6 py-5 text-left">
-                  Email
-                </th>
-                <th class="px-6 py-5 text-left">
-                  Status
-                </th>
-                <th class="px-6 py-5 text-left">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody
-              id="couriers-table-body"
-            ></tbody>
-          </table>
-        </div>
-      </section>
-    </div>
-  </main>
+            <table class="w-full">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-6 py-5 text-left">
+                    Nama
+                  </th>
+                  <th class="px-6 py-5 text-left">
+                    Email
+                  </th>
+                  <th class="px-6 py-5 text-left">
+                    Status
+                  </th>
+                  <th class="px-6 py-5 text-left">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                id="couriers-table-body"
+              ></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
   <!-- DELIVERY MODAL -->
   <div
     id="delivery-modal"
@@ -419,7 +422,7 @@
           class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
         ></textarea>
         <div
-          class="bg-green-50 p-5 rounded-2xl"
+          class="bg-green-50 rounded-2xl p-5"
         >
           <p class="text-sm text-slate-500">
             Ongkir
@@ -510,13 +513,30 @@
         id="zone-form"
         class="space-y-5"
       >
-        <input
-          type="text"
+        <select
           id="zone-kecamatan"
-          placeholder="Kecamatan"
           required
           class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
         >
+          <option value="">
+            Pilih Kecamatan
+          </option>
+          <option>
+            Ternate Selatan
+          </option>
+          <option>
+            Ternate Tengah
+          </option>
+          <option>
+            Ternate Utara
+          </option>
+          <option>
+            Pulau Ternate
+          </option>
+          <option>
+            Ternate Barat
+          </option>
+        </select>
         <input
           type="text"
           id="zone-kelurahan"
@@ -555,7 +575,7 @@
       </button>
       <div
         id="qrcode"
-        class="mt-5"
+        class="mt-4"
       ></div>
     </div>
   </div>
