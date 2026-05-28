@@ -1,3 +1,5 @@
+console.log('APP JS ACTIVE')
+
 import { supabase } from './supabase.js'
 /* ======================================================
    SESSION
