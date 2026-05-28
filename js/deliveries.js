@@ -328,24 +328,15 @@ deliveryForm?.addEventListener(
         courier?.nama || null
     }
   ])
-  if(error) {
-    alert(error.message)
-    return
-  }
-  alert(
-    'Pengantaran berhasil dibuat'
-  )
-  deliveryForm.reset()
-  deliveryModal
-  .classList.remove(
-    'flex'
-  )
-  deliveryModal
-  .classList.add(
-    'hidden'
-  )
-  loadDeliveries()
-})
+
+  if(error) 
+  { alert(error.message) 
+     return } deliveryForm.reset() 
+     deliveryModal .classList.remove( 'flex' ) 
+        deliveryModal .classList.add( 'hidden' ) loadDeliveries()
+     // AUTO OPEN QR 
+     if(inserted) { 
+        showQR( inserted.id ) }
 /* ======================================================
    DELETE
 ====================================================== */
