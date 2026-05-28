@@ -1,766 +1,568 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-
   <meta charset="UTF-8">
-
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   >
-
   <title>
-    Sobat Kita
+    Sobat Kita Dashboard
   </title>
-
-  <!-- TAILWIND -->
-
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- FONT -->
-
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   >
-
-  <!-- ICON -->
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    rel="stylesheet"
-  >
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-
     body {
       font-family: 'Inter', sans-serif;
+      background: #f1f5f9;
     }
-
+    .sidebar-menu.active {
+      background: rgba(255,255,255,0.15);
+    }
   </style>
-
 </head>
-
-<body class="bg-slate-100">
+<body class="min-h-screen flex">
+  <!-- AUTH -->
   <script>
-const adminSession =
-JSON.parse(
-  localStorage.getItem(
-    'sobatkita_admin'
-  )
-)
-if(!adminSession) {
-  window.location.href =
-    './login-admin.html'
-}
-</script>
-
-  <div class="flex h-screen overflow-hidden">
-
-    <!-- SIDEBAR -->
-
-    <aside
-      class="bg-white border-r transition-all duration-300 w-72"
-id="sidebar"
+    const adminSession =
+    JSON.parse(
+      localStorage.getItem(
+        'sobatkita_admin'
+      )
+    )
+    if(!adminSession) {
+      window.location.href =
+        './login-admin.html'
+    }
+  </script>
+  <!-- SIDEBAR -->
+  <aside
+    id="sidebar"
+    class="w-72 bg-green-800 text-white flex flex-col"
+  >
+    <!-- LOGO -->
+    <div
+      class="p-6 border-b border-white/10"
+    >
+      <div class="flex items-center gap-4">
+        <img
+          src="./icon-192.png"
+          class="w-14 h-14 object-contain"
+        >
+        <div>
+          <h1 class="text-2xl font-bold">
+            Sobat Kita
+          </h1>
+          <p class="text-sm text-green-100">
+            Dashboard Admin
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- MENU -->
+    <div class="flex-1 p-4 space-y-2">
+      <button
+        id="menu-deliveries"
+        class="sidebar-menu active w-full flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-white/10 transition"
+      >
+        <span class="text-2xl">
+          🚚
+        </span>
+        <span class="font-medium">
+          Pengantaran
+        </span>
+      </button>
+      <button
+        id="menu-zones"
+        class="sidebar-menu superadmin-only w-full flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-white/10 transition"
+      >
+        <span class="text-2xl">
+          📍
+        </span>
+        <span class="font-medium">
+          Master Ongkir
+        </span>
+      </button>
+      <button
+        id="menu-couriers"
+        class="sidebar-menu superadmin-only w-full flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-white/10 transition"
+      >
+        <span class="text-2xl">
+          🛵
+        </span>
+        <span class="font-medium">
+          Master Kurir
+        </span>
+      </button>
+    </div>
+    <!-- FOOTER -->
+    <div
+      class="p-4 border-t border-white/10"
+    >
+      <button
+        id="logout-btn"
+        class="w-full bg-red-500 hover:bg-red-600 transition py-4 rounded-2xl font-semibold"
+      >
+        Logout
+      </button>
+    </div>
+  </aside>
+  <!-- MAIN -->
+  <main class="flex-1 overflow-y-auto">
+    <!-- HEADER -->
+    <div
+      class="bg-white px-8 py-6 border-b sticky top-0 z-30"
     >
       <div
-  class="p-5 border-b flex items-center justify-between"
->
-  <div class="flex items-center gap-3">
-    <img
-      src="./logo.png"
-      class="w-12 h-12 object-contain"
-    >
-    <div>
-      <h1 class="font-bold text-xl text-green-700">
-        Sobat Kita
-      </h1>
-      <p class="text-xs text-slate-500">
-        Admin Dashboard
-      </p>
-    </div>
-  </div>
-  <button
-    id="toggle-sidebar"
-    class="bg-slate-100 p-2 rounded-xl"
-  >
-    ☰
-  </button>
-</div>
-
-      <div class="p-6 border-b">
-
-        <h1 class="text-3xl font-bold text-green-700">
-          Sobat Kita
-        </h1>
-
-        <p class="text-sm text-slate-500 mt-1">
-          Dashboard Admin
-        </p>
-
-      </div>
-
-      <nav class="p-4 space-y-2">
-
-        <!-- DELIVERY -->
-
-        <button
-          id="menu-deliveries"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-green-50 text-green-700 font-semibold"
-        >
-
-          <span class="material-symbols-outlined">
-            local_shipping
-          </span>
-
-          Pengantaran
-
-        </button>
-
-        <!-- ZONES -->
-
-        <button
-          id="menu-zones"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-100"
-        >
-
-          <span class="material-symbols-outlined">
-            map
-          </span>
-
-          Master Ongkir
-
-        </button>
-
-        <!-- COURIERS -->
-
-        <button
-          id="menu-couriers"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-100"
-        >
-
-          <span class="material-symbols-outlined">
-            delivery_dining
-          </span>
-
-          Kurir
-
-        </button>
-
-      </nav>
-
-    </aside>
-
-    <!-- MAIN -->
-
-    <main class="flex-1 overflow-auto">
-
-      <!-- DELIVERIES SECTION -->
-
-      <section
-        id="deliveries-section"
-        class="p-8"
+        class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5"
       >
-
-        <div
-          class="flex justify-between items-center mb-6"
-        >
-
-          <div>
-
-            <h2 class="text-3xl font-bold">
-              Pengantaran
-            </h2>
-
-            <p class="text-slate-500 mt-1">
-              Monitoring pengantaran obat
-            </p>
-
-          </div>
-
-          <button
-            id="btn-new-delivery"
-            class="bg-green-700 text-white px-5 py-3 rounded-xl"
+        <div>
+          <h1
+            id="page-title"
+            class="text-3xl font-bold text-slate-800"
           >
-            + Pengantaran Baru
-          </button>
-
+            Dashboard
+          </h1>
+          <p class="text-slate-500 mt-1">
+            Selamat datang di Sobat Kita
+          </p>
         </div>
-
         <!-- FILTER -->
-
-        <div class="flex flex-wrap gap-4 mb-6">
-
+        <div
+          class="flex flex-col md:flex-row gap-3"
+        >
           <input
             type="text"
             id="search-input"
             placeholder="Cari pasien..."
-            class="bg-white border rounded-xl px-4 py-3 w-72"
+            class="bg-slate-100 rounded-2xl px-5 py-3 outline-none"
           >
-
           <input
             type="date"
             id="start-date"
-            class="bg-white border rounded-xl px-4 py-3"
+            class="bg-slate-100 rounded-2xl px-5 py-3 outline-none"
           >
-
           <input
             type="date"
             id="end-date"
-            class="bg-white border rounded-xl px-4 py-3"
+            class="bg-slate-100 rounded-2xl px-5 py-3 outline-none"
           >
-
         </div>
-
-        <!-- TABLE -->
-
+      </div>
+    </div>
+    <!-- CONTENT -->
+    <div class="p-8">
+      <!-- ANALYTICS -->
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8"
+      >
         <div
-          class="bg-white rounded-2xl border shadow-sm overflow-hidden"
+          class="bg-white rounded-3xl p-6 shadow-sm"
         >
-
-          <table class="w-full">
-
-            <thead class="bg-slate-50">
-
-              <tr>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
-                  Pasien
-                </th>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
-                  Alamat
-                </th>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
-                  Kurir
-                </th>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
-                  Status
-                </th>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
-                  Aksi
-                </th>
-
-              </tr>
-
-            </thead>
-
-            <tbody id="delivery-table-body">
-
-            </tbody>
-
-          </table>
-
-          <!-- PAGINATION -->
-
-          <div
-            class="flex justify-between items-center p-6 border-t"
+          <p class="text-slate-500">
+            Total Pengantaran
+          </p>
+          <h2
+            id="total-deliveries"
+            class="text-4xl font-bold mt-3"
           >
-
-            <button
-              id="prev-page"
-              class="bg-slate-100 px-4 py-2 rounded-lg"
-            >
-              Sebelumnya
-            </button>
-
-            <p
-              id="page-info"
-              class="text-sm text-slate-500"
-            >
-              Halaman 1
-            </p>
-
-            <button
-              id="next-page"
-              class="bg-slate-100 px-4 py-2 rounded-lg"
-            >
-              Selanjutnya
-            </button>
-
-          </div>
-
+            0
+          </h2>
         </div>
-
+        <div
+          class="bg-white rounded-3xl p-6 shadow-sm"
+        >
+          <p class="text-slate-500">
+            Sedang Diantar
+          </p>
+          <h2
+            id="on-delivery-count"
+            class="text-4xl font-bold text-blue-600 mt-3"
+          >
+            0
+          </h2>
+        </div>
+        <div
+          class="bg-white rounded-3xl p-6 shadow-sm"
+        >
+          <p class="text-slate-500">
+            Selesai
+          </p>
+          <h2
+            id="completed-count"
+            class="text-4xl font-bold text-green-600 mt-3"
+          >
+            0
+          </h2>
+        </div>
+        <div
+          class="bg-white rounded-3xl p-6 shadow-sm"
+        >
+          <p class="text-slate-500">
+            Kurir Online
+          </p>
+          <h2
+            id="online-couriers"
+            class="text-4xl font-bold text-orange-500 mt-3"
+          >
+            0
+          </h2>
+        </div>
+      </div>
+      <!-- DELIVERIES -->
+      <section id="deliveries-section">
+        <div
+          class="flex items-center justify-between mb-6"
+        >
+          <div>
+            <h2 class="text-2xl font-bold">
+              Data Pengantaran
+            </h2>
+            <p class="text-slate-500 mt-1">
+              Monitoring pengantaran obat
+            </p>
+          </div>
+          <button
+            id="btn-new-delivery"
+            class="bg-green-700 hover:bg-green-800 text-white px-6 py-4 rounded-2xl font-semibold"
+          >
+            + Pengantaran Baru
+          </button>
+        </div>
+        <div
+          class="bg-white rounded-3xl shadow-sm overflow-hidden"
+        >
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-6 py-5 text-left">
+                    Pasien
+                  </th>
+                  <th class="px-6 py-5 text-left">
+                    Tujuan
+                  </th>
+                  <th class="px-6 py-5 text-left">
+                    Kurir
+                  </th>
+                  <th class="px-6 py-5 text-left">
+                    Status
+                  </th>
+                  <th class="px-6 py-5 text-left">
+                    Ongkir
+                  </th>
+                  <th class="px-6 py-5 text-left">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                id="delivery-table-body"
+              ></tbody>
+            </table>
+          </div>
+        </div>
       </section>
-
-      <!-- ZONES SECTION -->
-
+      <!-- ZONES -->
       <section
         id="zones-section"
-        class="p-8 hidden"
+        class="hidden"
       >
-
         <div
-          class="flex justify-between items-center mb-6"
+          class="flex items-center justify-between mb-6"
         >
-
           <div>
-
-            <h2 class="text-3xl font-bold">
+            <h2 class="text-2xl font-bold">
               Master Ongkir
             </h2>
-
             <p class="text-slate-500 mt-1">
-              Kelola wilayah pengantaran
+              Kelola tarif pengantaran
             </p>
-
           </div>
-
           <button
             id="btn-add-zone"
-            class="bg-green-700 text-white px-5 py-3 rounded-xl"
+            class="bg-green-700 text-white px-6 py-4 rounded-2xl font-semibold"
           >
-            + Tambah Wilayah
+            + Tambah Ongkir
           </button>
-
         </div>
-
         <div
-          class="bg-white rounded-2xl border shadow-sm overflow-hidden"
+          class="bg-white rounded-3xl shadow-sm overflow-hidden"
         >
-
           <table class="w-full">
-
             <thead class="bg-slate-50">
-
               <tr>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
+                <th class="px-6 py-5 text-left">
                   Kecamatan
                 </th>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
+                <th class="px-6 py-5 text-left">
                   Kelurahan
                 </th>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
+                <th class="px-6 py-5 text-left">
                   Ongkir
                 </th>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
+                <th class="px-6 py-5 text-left">
                   Aksi
                 </th>
-
               </tr>
-
             </thead>
-
-            <tbody id="zones-table-body">
-
-            </tbody>
-
+            <tbody
+              id="zones-table-body"
+            ></tbody>
           </table>
-
         </div>
-
       </section>
-
-      <!-- COURIERS SECTION -->
-
+      <!-- COURIERS -->
       <section
         id="couriers-section"
-        class="p-8 hidden"
+        class="hidden"
       >
-
         <div
-          class="flex justify-between items-center mb-6"
+          class="flex items-center justify-between mb-6"
         >
-
           <div>
-
-            <h2 class="text-3xl font-bold">
+            <h2 class="text-2xl font-bold">
               Master Kurir
             </h2>
-
             <p class="text-slate-500 mt-1">
               Kelola akun kurir
             </p>
-
           </div>
-
           <button
             id="btn-add-courier"
-            class="bg-green-700 text-white px-5 py-3 rounded-xl"
+            class="bg-green-700 text-white px-6 py-4 rounded-2xl font-semibold"
           >
             + Tambah Kurir
           </button>
-
         </div>
-
         <div
-          class="bg-white rounded-2xl border shadow-sm overflow-hidden"
+          class="bg-white rounded-3xl shadow-sm overflow-hidden"
         >
-
           <table class="w-full">
-
             <thead class="bg-slate-50">
-
               <tr>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
+                <th class="px-6 py-5 text-left">
                   Nama
                 </th>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
+                <th class="px-6 py-5 text-left">
                   Email
                 </th>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
+                <th class="px-6 py-5 text-left">
                   Status
                 </th>
-
-                <th class="px-6 py-4 text-left text-sm text-slate-500">
+                <th class="px-6 py-5 text-left">
                   Aksi
                 </th>
-
               </tr>
-
             </thead>
-
-            <tbody id="couriers-table-body">
-
-            </tbody>
-
+            <tbody
+              id="couriers-table-body"
+            ></tbody>
           </table>
-
         </div>
-
       </section>
-
-    </main>
-
-  </div>
-
+    </div>
+  </main>
   <!-- DELIVERY MODAL -->
-
   <div
     id="delivery-modal"
-    class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4"
+    class="fixed inset-0 bg-black/50 hidden items-center justify-center p-5 z-50"
   >
-
-    <div class="bg-white rounded-2xl w-full max-w-2xl">
-
-      <div
-        class="p-6 border-b flex justify-between items-center"
+    <div
+      class="bg-white rounded-3xl w-full max-w-2xl p-8 relative"
+    >
+      <button
+        class="close-modal absolute top-5 right-5 text-2xl"
       >
-
-        <h3 class="text-2xl font-bold">
-          Pengantaran Baru
-        </h3>
-
-        <button id="close-delivery-modal">
-          ✕
-        </button>
-
-      </div>
-
+        ✕
+      </button>
+      <h2 class="text-2xl font-bold mb-6">
+        Pengantaran Baru
+      </h2>
       <form
         id="delivery-form"
-        class="p-6 space-y-5"
+        class="space-y-5"
       >
-
-        <div class="grid grid-cols-2 gap-4">
-
-          <input
-            type="text"
-            id="patient-name"
-            placeholder="Nama Pasien"
-            required
-            class="w-full border rounded-xl px-4 py-3"
-          >
-
-          <input
-            type="text"
-            id="patient-phone"
-            placeholder="No WhatsApp"
-            required
-            class="w-full border rounded-xl px-4 py-3"
-          >
-
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-
-          <select
-            id="kecamatan"
-            required
-            class="w-full border rounded-xl px-4 py-3"
-          >
-
-            <option value="">
-              Pilih Kecamatan
-            </option>
-
-          </select>
-
-          <select
-            id="kelurahan"
-            required
-            class="w-full border rounded-xl px-4 py-3"
-          >
-
-            <option value="">
-              Pilih Kelurahan
-            </option>
-
-          </select>
-
-        </div>
-
-        <!-- ONGKIR -->
-
-        <div
-          class="bg-green-50 border border-green-200 rounded-xl p-4"
+        <input
+          type="text"
+          id="patient-name"
+          placeholder="Nama Pasien"
+          required
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
         >
-
-          <p class="text-sm text-slate-500">
-            Ongkir
-          </p>
-
-          <h3
-            id="ongkir-display"
-            class="text-2xl font-bold text-green-700"
-          >
-            Rp 0
-          </h3>
-
-        </div>
-
+        <input
+          type="text"
+          id="patient-phone"
+          placeholder="No WhatsApp"
+          required
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+        >
+        <select
+          id="kecamatan"
+          required
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+        ></select>
+        <select
+          id="kelurahan"
+          required
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+        ></select>
         <textarea
           id="address"
           rows="3"
-          placeholder="Alamat Lengkap"
+          placeholder="Alamat lengkap"
           required
-          class="w-full border rounded-xl px-4 py-3"
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
         ></textarea>
-
+        <div
+          class="bg-green-50 p-5 rounded-2xl"
+        >
+          <p class="text-sm text-slate-500">
+            Ongkir
+          </p>
+          <h3
+            id="ongkir-display"
+            class="text-3xl font-bold text-green-700 mt-2"
+          >
+            Rp 0
+          </h3>
+        </div>
         <button
           type="submit"
-          class="w-full bg-green-700 text-white py-4 rounded-xl"
+          class="w-full bg-green-700 text-white py-4 rounded-2xl font-semibold"
         >
           Simpan Pengantaran
         </button>
-
       </form>
-
     </div>
-
   </div>
-
-  <!-- DETAIL MODAL -->
-
-  <div
-    id="detail-modal"
-    class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4"
-  >
-
-    <div class="bg-white rounded-2xl w-full max-w-md p-6">
-
-      <div
-        class="flex justify-between items-center mb-5"
-      >
-
-        <h3 class="text-2xl font-bold">
-          Detail Pengantaran
-        </h3>
-
-        <button id="close-detail-modal">
-          ✕
-        </button>
-
-      </div>
-
-      <div id="detail-content"></div>
-
-      <button
-        id="print-delivery"
-        class="w-full mt-5 bg-green-700 text-white py-3 rounded-xl"
-      >
-        Print
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- QR MODAL -->
-
-  <div
-    id="qr-modal"
-    class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50"
-  >
-
-    <div class="bg-white rounded-2xl p-8 w-96">
-
-      <div
-        class="flex justify-between items-center mb-6"
-      >
-
-        <h3 class="text-xl font-bold">
-          QR Pengantaran
-        </h3>
-
-        <button id="close-qr-modal">
-          ✕
-        </button>
-
-      </div>
-
-      <div
-        id="qrcode"
-        class="flex justify-center"
-      ></div>
-
-    </div>
-
-  </div>
-
-  <!-- ZONE MODAL -->
-
-  <div
-    id="zone-modal"
-    class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4"
-  >
-
-    <div class="bg-white rounded-2xl w-full max-w-lg">
-
-      <div
-        class="p-6 border-b flex justify-between items-center"
-      >
-
-        <h3 class="text-2xl font-bold">
-          Tambah Wilayah
-        </h3>
-
-        <button id="close-zone-modal">
-          ✕
-        </button>
-
-      </div>
-
-      <form
-        id="zone-form"
-        class="p-6 space-y-5"
-      >
-
-        <input
-          type="text"
-          id="zone-kecamatan"
-          placeholder="Kecamatan"
-          required
-          class="w-full border rounded-xl px-4 py-3"
-        >
-
-        <input
-          type="text"
-          id="zone-kelurahan"
-          placeholder="Kelurahan"
-          required
-          class="w-full border rounded-xl px-4 py-3"
-        >
-
-        <input
-          type="number"
-          id="zone-ongkir"
-          placeholder="Ongkir"
-          required
-          class="w-full border rounded-xl px-4 py-3"
-        >
-
-        <button
-          type="submit"
-          class="w-full bg-green-700 text-white py-4 rounded-xl"
-        >
-          Simpan
-        </button>
-
-      </form>
-
-    </div>
-
-  </div>
-
   <!-- COURIER MODAL -->
-
   <div
     id="courier-modal"
-    class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4"
+    class="fixed inset-0 bg-black/50 hidden items-center justify-center p-5 z-50"
   >
-
-    <div class="bg-white rounded-2xl w-full max-w-lg">
-
-      <div
-        class="p-6 border-b flex justify-between items-center"
+    <div
+      class="bg-white rounded-3xl w-full max-w-lg p-8 relative"
+    >
+      <button
+        class="close-modal absolute top-5 right-5 text-2xl"
       >
-
-        <h3 class="text-2xl font-bold">
-          Tambah Kurir
-        </h3>
-
-        <button id="close-courier-modal">
-          ✕
-        </button>
-
-      </div>
-
+        ✕
+      </button>
+      <h2 class="text-2xl font-bold mb-6">
+        Tambah Kurir
+      </h2>
       <form
         id="courier-form"
-        class="p-6 space-y-5"
+        class="space-y-5"
       >
-
         <input
           type="text"
           id="courier-name"
           placeholder="Nama Kurir"
           required
-          class="w-full border rounded-xl px-4 py-3"
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
         >
-
         <input
           type="email"
           id="courier-email"
           placeholder="Email"
           required
-          class="w-full border rounded-xl px-4 py-3"
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
         >
-
         <input
-          type="text"
+          type="password"
           id="courier-password"
           placeholder="Password"
           required
-          class="w-full border rounded-xl px-4 py-3"
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
         >
-
         <button
           type="submit"
-          class="w-full bg-green-700 text-white py-4 rounded-xl"
+          class="w-full bg-green-700 text-white py-4 rounded-2xl font-semibold"
         >
-          Simpan
+          Simpan Kurir
         </button>
-
       </form>
-
     </div>
-
   </div>
-
-  <!-- QR LIBRARY -->
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
+  <!-- ZONE MODAL -->
+  <div
+    id="zone-modal"
+    class="fixed inset-0 bg-black/50 hidden items-center justify-center p-5 z-50"
+  >
+    <div
+      class="bg-white rounded-3xl w-full max-w-lg p-8 relative"
+    >
+      <button
+        class="close-modal absolute top-5 right-5 text-2xl"
+      >
+        ✕
+      </button>
+      <h2 class="text-2xl font-bold mb-6">
+        Tambah Ongkir
+      </h2>
+      <form
+        id="zone-form"
+        class="space-y-5"
+      >
+        <input
+          type="text"
+          id="zone-kecamatan"
+          placeholder="Kecamatan"
+          required
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+        >
+        <input
+          type="text"
+          id="zone-kelurahan"
+          placeholder="Kelurahan"
+          required
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+        >
+        <input
+          type="number"
+          id="zone-ongkir"
+          placeholder="Ongkir"
+          required
+          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+        >
+        <button
+          type="submit"
+          class="w-full bg-green-700 text-white py-4 rounded-2xl font-semibold"
+        >
+          Simpan Ongkir
+        </button>
+      </form>
+    </div>
+  </div>
+  <!-- QR MODAL -->
+  <div
+    id="qr-modal"
+    class="fixed inset-0 bg-black/50 hidden items-center justify-center p-5 z-50"
+  >
+    <div
+      class="bg-white rounded-3xl p-8 relative"
+    >
+      <button
+        class="close-modal absolute top-5 right-5 text-2xl"
+      >
+        ✕
+      </button>
+      <div
+        id="qrcode"
+        class="mt-5"
+      ></div>
+    </div>
+  </div>
   <!-- APP -->
-
   <script
     type="module"
     src="./assets/js/app.js"
   ></script>
-
 </body>
-
 </html>
