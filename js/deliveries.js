@@ -543,10 +543,48 @@ editDeliveryForm
   )
   loadDeliveries()
 })
-/* ======================================================
-   QR DETAIL
-====================================================== */
-
+window.showQR =
+async (id) => {
+  const {
+    data
+  } = await supabase
+  .from('deliveries')
+  .select('*')
+  .eq('id', id)
+  .single()
+  if(!data) return
+  /* ======================================================
+     OPEN MODAL
+  ====================================================== */
+  qrModal
+  .classList.remove(
+    'hidden'
+  )
+  qrModal
+  .classList.add(
+    'flex'
+  )
+  /* ======================================================
+     CLEAR QR
+  ====================================================== */
+  document.getElementById(
+    'qr-code'
+  ).innerHTML = ''
+  /* ======================================================
+     GENERATE QR
+  ====================================================== */
+  new QRCode(
+    document.getElementById(
+      'qr-code'
+    ),
+    {
+      text:
+      `${window.location.origin}/tracking.html?token=${data.qr_token}`,
+      width: 220,
+      height: 220
+    }
+  )
+}
 /* ======================================================
    PRINT
 ====================================================== */
