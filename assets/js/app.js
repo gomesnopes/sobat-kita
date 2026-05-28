@@ -2,6 +2,27 @@ import { supabase } from './supabase.js'
 /* ======================================================
    ELEMENTS
 ====================================================== */
+const sidebar =
+document.getElementById(
+  'sidebar'
+)
+const toggleSidebar =
+document.getElementById(
+  'toggle-sidebar'
+)
+if(toggleSidebar) {
+  toggleSidebar.addEventListener(
+    'click',
+    () => {
+    sidebar.classList.toggle(
+      'w-20'
+    )
+    sidebar.classList.toggle(
+      'w-72'
+    )
+  })
+}
+
 const deliveriesSection =
 document.getElementById(
 'deliveries-section'
