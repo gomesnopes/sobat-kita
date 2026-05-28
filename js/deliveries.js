@@ -339,7 +339,6 @@ const {
 .single()
 
 if(error) {
-
   alert(error.message)
   return
 }
@@ -358,14 +357,32 @@ deliveryModal
 
 loadDeliveries()
 
-// AUTO OPEN QR
+setTimeout(() => {
 
-if(inserted) {
+  supabase
 
-  showQR(
-    inserted.id
+  .from('deliveries')
+
+  .select('*')
+
+  .eq(
+    'qr_token',
+    qr_token
   )
-})
+
+  .single()
+
+  .then(({ data }) => {
+
+    if(data) {
+
+      showQR(
+        data.id
+      )
+    }
+  })
+
+}, 500)
 
 /* ======================================================
    DELETE
