@@ -573,6 +573,7 @@ async (id) => {
   /* ======================================================
      GENERATE QR
   ====================================================== */
+  console.log(data.qr_token)
   new QRCode(
     document.getElementById(
       'qr-code'
