@@ -3,38 +3,50 @@ from './supabase.js'
 /* ======================================================
    ELEMENT
 ====================================================== */
-const deliveryTable =
-document.querySelector(
-  '#deliveries-section tbody'
-)
 const deliveryModal =
 document.getElementById(
   'delivery-modal'
-)
-const btnAddDelivery =
-document.getElementById(
-  'btn-add-delivery'
-)
-const closeDeliveryModal =
-document.getElementById(
-  'close-delivery-modal'
-)
-const deliveryForm =
-document.getElementById(
-  'delivery-form'
 )
 const qrModal =
 document.getElementById(
   'qr-modal'
 )
+const btnNewDelivery =
+document.getElementById(
+  'btn-new-delivery'
+)
+const closeDeliveryModal =
+document.getElementById(
+  'close-delivery-modal'
+)
 const closeQrModal =
 document.getElementById(
   'close-qr-modal'
 )
+const deliveryForm =
+document.getElementById(
+  'delivery-form'
+)
+const deliveryTable =
+document.querySelector(
+  '#deliveries-section tbody'
+)
+const kecamatanSelect =
+document.getElementById(
+  'kecamatan'
+)
+const kelurahanSelect =
+document.getElementById(
+  'kelurahan'
+)
+const ongkirDisplay =
+document.getElementById(
+  'ongkir-display'
+)
 /* ======================================================
-   OPEN DELIVERY MODAL
+   OPEN MODAL
 ====================================================== */
-btnAddDelivery?.addEventListener(
+btnNewDelivery?.addEventListener(
   'click',
   () => {
   deliveryModal
@@ -49,8 +61,7 @@ btnAddDelivery?.addEventListener(
 /* ======================================================
    CLOSE DELIVERY MODAL
 ====================================================== */
-closeDeliveryModal
-?.addEventListener(
+closeDeliveryModal?.addEventListener(
   'click',
   () => {
   deliveryModal
@@ -65,8 +76,7 @@ closeDeliveryModal
 /* ======================================================
    CLOSE QR MODAL
 ====================================================== */
-closeQrModal
-?.addEventListener(
+closeQrModal?.addEventListener(
   'click',
   () => {
   qrModal
@@ -106,12 +116,61 @@ window.addEventListener(
   }
 })
 /* ======================================================
+   LOAD KELURAHAN
+====================================================== */
+kecamatanSelect?.addEventListener(
+  'change',
+  async () => {
+  const kecamatan =
+    kecamatanSelect.value
+  const {
+    data
+  } = await supabase
+  .from('delivery_zones')
+  .select('*')
+  .eq(
+    'kecamatan',
+    kecamatan
+  )
+  kelurahanSelect.innerHTML = `
+    <option value="">
+      Pilih Kelurahan
+    </option>
+  `
+  data?.forEach((item) => {
+    kelurahanSelect.innerHTML += `
+      <option
+        value="${item.kelurahan}"
+        data-ongkir="${item.ongkir}"
+      >
+        ${item.kelurahan}
+      </option>
+    `
+  })
+})
+/* ======================================================
+   ONGKIR
+====================================================== */
+kelurahanSelect?.addEventListener(
+  'change',
+  () => {
+  const selected =
+    kelurahanSelect.options[
+      kelurahanSelect.selectedIndex
+    ]
+  const ongkir =
+    selected.dataset.ongkir || 0
+  ongkirDisplay.innerText =
+    `Rp ${parseInt(
+      ongkir
+    ).toLocaleString()}`
+})
+/* ======================================================
    LOAD DELIVERIES
 ====================================================== */
 async function loadDeliveries() {
   const {
-    data,
-    error
+    data
   } = await supabase
   .from('deliveries')
   .select('*')
@@ -121,10 +180,6 @@ async function loadDeliveries() {
       ascending: false
     }
   )
-  if(error) {
-    console.error(error)
-    return
-  }
   deliveryTable.innerHTML = ''
   data?.forEach((item) => {
     let badge = `
@@ -156,18 +211,18 @@ async function loadDeliveries() {
       <tr class="border-b">
         <td class="px-6 py-5">
           <p class="font-semibold">
-            ${item.patient_name || '-'}
+            ${item.patient_name}
           </p>
           <p class="text-sm text-slate-500 mt-1">
-            ${item.patient_phone || '-'}
+            ${item.patient_phone}
           </p>
         </td>
         <td class="px-6 py-5">
           <p>
-            ${item.kelurahan || '-'}
+            ${item.kelurahan}
           </p>
           <p class="text-sm text-slate-500 mt-1">
-            ${item.address || '-'}
+            ${item.address}
           </p>
         </td>
         <td class="px-6 py-5">
@@ -210,8 +265,7 @@ async function loadDeliveries() {
 /* ======================================================
    CREATE DELIVERY
 ====================================================== */
-deliveryForm
-?.addEventListener(
+deliveryForm?.addEventListener(
   'submit',
   async (e) => {
   e.preventDefault()
@@ -224,26 +278,25 @@ deliveryForm
       'patient-phone'
     ).value
   const kecamatan =
-    document.getElementById(
-      'kecamatan'
-    ).value
+    kecamatanSelect.value
   const kelurahan =
-    document.getElementById(
-      'kelurahan'
-    ).value
+    kelurahanSelect.value
   const address =
     document.getElementById(
-      'address'
+      'patient-address'
     ).value
+  const selected =
+    kelurahanSelect.options[
+      kelurahanSelect.selectedIndex
+    ]
   const ongkir =
-    document.getElementById(
-      'ongkir'
-    ).value
-  /* ======================================================
-     FIND COURIER
-  ====================================================== */
+    selected.dataset.ongkir || 0
+  // RANDOM TOKEN
+  const qr_token =
+    crypto.randomUUID()
+  // AUTO COURIER
   const {
-    data: couriers
+    data: courier
   } = await supabase
   .from('couriers')
   .select('*')
@@ -252,19 +305,8 @@ deliveryForm
     true
   )
   .limit(1)
-  let courier_name = '-'
-  if(couriers?.length) {
-    courier_name =
-      couriers[0].nama
-  }
-  /* ======================================================
-     QR TOKEN
-  ====================================================== */
-  const qr_token =
-    crypto.randomUUID()
-  /* ======================================================
-     INSERT
-  ====================================================== */
+  .single()
+  // INSERT
   const {
     error
   } = await supabase
@@ -277,18 +319,22 @@ deliveryForm
       kelurahan,
       address,
       ongkir,
-      courier_name,
-      status: 'pending',
-      qr_token
+      qr_token,
+      status:
+        courier
+        ? 'on_delivery'
+        : 'pending',
+      courier_name:
+        courier?.nama || null
     }
   ])
   if(error) {
     alert(error.message)
     return
   }
-  /* ======================================================
-     RESET
-  ====================================================== */
+  alert(
+    'Pengantaran berhasil dibuat'
+  )
   deliveryForm.reset()
   deliveryModal
   .classList.remove(
@@ -299,27 +345,157 @@ deliveryForm
     'hidden'
   )
   loadDeliveries()
-  /* ======================================================
-     OPEN QR
-  ====================================================== */
+})
+/* ======================================================
+   DELETE
+====================================================== */
+window.deleteDelivery =
+async (id) => {
+  const yes =
+    confirm(
+      'Hapus pengantaran?'
+    )
+  if(!yes) return
+  await supabase
+  .from('deliveries')
+  .delete()
+  .eq('id', id)
+  loadDeliveries()
+}
+/* ======================================================
+   EDIT MODAL ELEMENT
+====================================================== */
+const editDeliveryModal =
+document.getElementById(
+  'edit-delivery-modal'
+)
+const closeEditDeliveryModal =
+document.getElementById(
+  'close-edit-delivery-modal'
+)
+const editDeliveryForm =
+document.getElementById(
+  'edit-delivery-form'
+)
+/* ======================================================
+   CLOSE EDIT MODAL
+====================================================== */
+closeEditDeliveryModal
+?.addEventListener(
+  'click',
+  () => {
+  editDeliveryModal
+  .classList.remove(
+    'flex'
+  )
+  editDeliveryModal
+  .classList.add(
+    'hidden'
+  )
+})
+/* ======================================================
+   OPEN EDIT
+====================================================== */
+window.editDelivery =
+async (id) => {
   const {
-    data: latest
+    data
   } = await supabase
   .from('deliveries')
   .select('*')
-  .eq(
-    'qr_token',
-    qr_token
-  )
+  .eq('id', id)
   .single()
-  if(latest) {
-    showQR(
-      latest.id
-    )
+  if(!data) return
+  document.getElementById(
+    'edit-delivery-id'
+  ).value = data.id
+  document.getElementById(
+    'edit-patient-name'
+  ).value = data.patient_name
+  document.getElementById(
+    'edit-patient-phone'
+  ).value = data.patient_phone
+  document.getElementById(
+    'edit-address'
+  ).value = data.address
+  document.getElementById(
+    'edit-status'
+  ).value = data.status
+  document.getElementById(
+    'edit-ongkir'
+  ).value = data.ongkir
+  editDeliveryModal
+  .classList.remove(
+    'hidden'
+  )
+  editDeliveryModal
+  .classList.add(
+    'flex'
+  )
+}
+/* ======================================================
+   UPDATE DELIVERY
+====================================================== */
+editDeliveryForm
+?.addEventListener(
+  'submit',
+  async (e) => {
+  e.preventDefault()
+  const id =
+    document.getElementById(
+      'edit-delivery-id'
+    ).value
+  const patient_name =
+    document.getElementById(
+      'edit-patient-name'
+    ).value
+  const patient_phone =
+    document.getElementById(
+      'edit-patient-phone'
+    ).value
+  const address =
+    document.getElementById(
+      'edit-address'
+    ).value
+  const status =
+    document.getElementById(
+      'edit-status'
+    ).value
+  const ongkir =
+    document.getElementById(
+      'edit-ongkir'
+    ).value
+  const {
+    error
+  } = await supabase
+  .from('deliveries')
+  .update({
+    patient_name,
+    patient_phone,
+    address,
+    status,
+    ongkir
+  })
+  .eq('id', id)
+  if(error) {
+    alert(error.message)
+    return
   }
+  alert(
+    'Pengantaran berhasil diupdate'
+  )
+  editDeliveryModal
+  .classList.remove(
+    'flex'
+  )
+  editDeliveryModal
+  .classList.add(
+    'hidden'
+  )
+  loadDeliveries()
 })
 /* ======================================================
-   SHOW QR
+   QR DETAIL
 ====================================================== */
 window.showQR =
 async (id) => {
@@ -331,9 +507,6 @@ async (id) => {
   .eq('id', id)
   .single()
   if(!data) return
-  /* ======================================================
-     OPEN MODAL
-  ====================================================== */
   qrModal
   .classList.remove(
     'hidden'
@@ -342,104 +515,73 @@ async (id) => {
   .classList.add(
     'flex'
   )
-  /* ======================================================
-     DETAIL
-  ====================================================== */
+  // DETAIL
   document.getElementById(
     'qr-detail'
   ).innerHTML = `
-    <div class="text-center mb-6">
-      <img
-        src="./assets/icon-192.png"
-        class="w-20 h-20 mx-auto mb-3"
-      >
-      <h2 class="text-2xl font-bold">
-        SOBAT KITA
-      </h2>
-      <p class="text-slate-500 text-sm mt-1">
-        Detail Pengantaran
-      </p>
+    <div>
+      <b>Pasien:</b>
+      ${data.patient_name}
     </div>
-    <div class="space-y-3 text-sm">
-      <div>
-        <b>Pasien:</b>
-        ${data.patient_name || '-'}
-      </div>
-      <div>
-        <b>No HP:</b>
-        ${data.patient_phone || '-'}
-      </div>
-      <div>
-        <b>Kecamatan:</b>
-        ${data.kecamatan || '-'}
-      </div>
-      <div>
-        <b>Kelurahan:</b>
-        ${data.kelurahan || '-'}
-      </div>
-      <div>
-        <b>Alamat:</b>
-        ${data.address || '-'}
-      </div>
-      <div>
-        <b>Kurir:</b>
-        ${data.courier_name || '-'}
-      </div>
-      <div>
-        <b>Status:</b>
-        ${data.status || '-'}
-      </div>
-      <div>
-        <b>Ongkir:</b>
-        Rp ${parseInt(
-          data.ongkir || 0
-        ).toLocaleString()}
-      </div>
+    <div>
+      <b>No HP:</b>
+      ${data.patient_phone}
+    </div>
+    <div>
+      <b>Kecamatan:</b>
+      ${data.kecamatan}
+    </div>
+    <div>
+      <b>Kelurahan:</b>
+      ${data.kelurahan}
+    </div>
+    <div>
+      <b>Alamat:</b>
+      ${data.address}
+    </div>
+    <div>
+      <b>Kurir:</b>
+      ${data.courier_name || '-'}
+    </div>
+    <div>
+      <b>Status:</b>
+      ${data.status}
+    </div>
+    <div>
+      <b>Ongkir:</b>
+      Rp ${parseInt(
+        data.ongkir || 0
+      ).toLocaleString()}
     </div>
   `
-  /* ======================================================
-     QR CODE
-  ====================================================== */
-  document.getElementById(
-    'qr-code'
-  ).innerHTML = ''
-  new QRCode(
+  // QR
+  const qrBox =
     document.getElementById(
-      'qr-code'
-    ),
+      'qrcode'
+    )
+  qrBox.innerHTML = ''
+  new QRCode(
+    qrBox,
     {
       text:
-      `${window.location.origin}/tracking.html?token=${data.qr_token}`,
+`${window.location.origin}/tracking.html?token=${data.qr_token}`,
       width: 220,
       height: 220
     }
   )
 }
 /* ======================================================
-   DELETE
+   PRINT
 ====================================================== */
-window.deleteDelivery =
-async (id) => {
-  const yes =
-    confirm(
-      'Hapus pengantaran ini?'
-    )
-  if(!yes) return
-  await supabase
-  .from('deliveries')
-  .delete()
-  .eq('id', id)
-  loadDeliveries()
-}
-/* ======================================================
-   EDIT DELIVERY
-====================================================== */
-window.editDelivery =
-async (id) => {
-  alert(
-    'Edit delivery sementara aktif di versi sebelumnya 😄'
-  )
-}
+document
+.getElementById(
+  'print-qr'
+)
+?.addEventListener(
+  'click',
+  () => {
+  window.print()
+})
 /* ======================================================
    INITIAL
 ====================================================== */
