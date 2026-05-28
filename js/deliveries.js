@@ -357,32 +357,14 @@ deliveryModal
 
 loadDeliveries()
 
-setTimeout(() => {
+if(inserted) {
 
-  supabase
-
-  .from('deliveries')
-
-  .select('*')
-
-  .eq(
-    'qr_token',
-    qr_token
+  showQR(
+    inserted.id
   )
+}
 
-  .single()
-
-  .then(({ data }) => {
-
-    if(data) {
-
-      showQR(
-        data.id
-      )
-    }
-  })
-
-}, 500)
+})
 
 /* ======================================================
    DELETE
