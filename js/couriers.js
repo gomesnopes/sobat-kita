@@ -212,7 +212,38 @@ async (
   loadCouriers()
 }
 /* ======================================================
-   EDIT
+   EDIT MODAL ELEMENT
+====================================================== */
+const editCourierModal =
+document.getElementById(
+  'edit-courier-modal'
+)
+const closeEditCourierModal =
+document.getElementById(
+  'close-edit-courier-modal'
+)
+const editCourierForm =
+document.getElementById(
+  'edit-courier-form'
+)
+/* ======================================================
+   CLOSE EDIT MODAL
+====================================================== */
+closeEditCourierModal
+?.addEventListener(
+  'click',
+  () => {
+  editCourierModal
+  .classList.remove(
+    'flex'
+  )
+  editCourierModal
+  .classList.add(
+    'hidden'
+  )
+})
+/* ======================================================
+   OPEN EDIT
 ====================================================== */
 window.editCourier =
 async (id) => {
@@ -224,35 +255,98 @@ async (id) => {
   .eq('id', id)
   .single()
   if(!data) return
+  document.getElementById(
+    'edit-courier-id'
+  ).value = data.id
+  document.getElementById(
+    'edit-courier-name'
+  ).value = data.nama
+  document.getElementById(
+    'edit-courier-username'
+  ).value = data.username
+  document.getElementById(
+    'edit-courier-phone'
+  ).value = data.no_hp
+  document.getElementById(
+    'edit-courier-status'
+  ).value =
+    data.is_online
+    ? 'true'
+    : 'false'
+  editCourierModal
+  .classList.remove(
+    'hidden'
+  )
+  editCourierModal
+  .classList.add(
+    'flex'
+  )
+}
+/* ======================================================
+   UPDATE COURIER
+====================================================== */
+editCourierForm
+?.addEventListener(
+  'submit',
+  async (e) => {
+  e.preventDefault()
+  const id =
+    document.getElementById(
+      'edit-courier-id'
+    ).value
   const nama =
-    prompt(
-      'Nama',
-      data.nama
-    )
-  if(!nama) return
+    document.getElementById(
+      'edit-courier-name'
+    ).value
   const username =
-    prompt(
-      'Username',
-      data.username
-    )
+    document.getElementById(
+      'edit-courier-username'
+    ).value
   const no_hp =
-    prompt(
-      'No HP',
-      data.no_hp
-    )
-  await supabase
-  .from('couriers')
-  .update({
+    document.getElementById(
+      'edit-courier-phone'
+    ).value
+  const password =
+    document.getElementById(
+      'edit-courier-password'
+    ).value
+  const is_online =
+    document.getElementById(
+      'edit-courier-status'
+    ).value === 'true'
+  const payload = {
     nama,
     username,
-    no_hp
-  })
+    no_hp,
+    is_online
+  }
+  if(password) {
+    payload.password =
+      password
+  }
+  const {
+    error
+  } = await supabase
+  .from('couriers')
+  .update(payload)
   .eq('id', id)
+  if(error) {
+    alert(error.message)
+    return
+  }
   alert(
     'Kurir berhasil diupdate'
   )
+  editCourierModal
+  .classList.remove(
+    'flex'
+  )
+  editCourierModal
+  .classList.add(
+    'hidden'
+  )
   loadCouriers()
-}
+})
 /* ======================================================
    DELETE
 ====================================================== */
