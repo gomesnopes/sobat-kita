@@ -306,37 +306,67 @@ deliveryForm?.addEventListener(
   )
   .limit(1)
   .single()
-  // INSERT
-  const {
-    error
-  } = await supabase
-  .from('deliveries')
-  .insert([
-    {
-      patient_name,
-      patient_phone,
-      kecamatan,
-      kelurahan,
-      address,
-      ongkir,
-      qr_token,
-      status:
-        courier
-        ? 'on_delivery'
-        : 'pending',
-      courier_name:
-        courier?.nama || null
-    }
-  ])
 
-  if(error) 
-  { alert(error.message) 
-     return } deliveryForm.reset() 
-     deliveryModal .classList.remove( 'flex' ) 
-        deliveryModal .classList.add( 'hidden' ) loadDeliveries()
-     // AUTO OPEN QR 
-     if(inserted) { 
-        showQR( inserted.id ) }
+// INSERT
+
+const {
+  data: inserted,
+  error
+} = await supabase
+
+.from('deliveries')
+
+.insert([
+  {
+    patient_name,
+    patient_phone,
+    kecamatan,
+    kelurahan,
+    address,
+    ongkir,
+    qr_token,
+    status:
+      courier
+      ? 'on_delivery'
+      : 'pending',
+    courier_name:
+      courier?.nama || null
+  }
+])
+
+.select()
+
+.single()
+
+if(error) {
+
+  alert(error.message)
+  return
+}
+
+deliveryForm.reset()
+
+deliveryModal
+.classList.remove(
+  'flex'
+)
+
+deliveryModal
+.classList.add(
+  'hidden'
+)
+
+loadDeliveries()
+
+// AUTO OPEN QR
+
+if(inserted) {
+
+  showQR(
+    inserted.id
+  )
+}
+
 /* ======================================================
    DELETE
 ====================================================== */
