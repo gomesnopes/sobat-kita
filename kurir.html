@@ -186,7 +186,29 @@
     </div>
 
   </div>
-
+<!-- QR MODAL -->
+<div
+  id="scanner-modal"
+  class="fixed inset-0 bg-black z-[999] hidden flex-col"
+>
+  <div
+    class="flex items-center justify-between p-5 text-white"
+  >
+    <h2 class="text-xl font-bold">
+      Scan QR Pengantaran
+    </h2>
+    <button
+      id="close-scanner"
+      class="text-2xl"
+    >
+      ✕
+    </button>
+  </div>
+  <div
+    id="reader"
+    class="flex-1"
+  ></div>
+</div>
   <!-- SUPABASE -->
 
   <script type="module">
@@ -564,9 +586,7 @@
       'click',
       () => {
 
-      alert(
-        'QR Scanner akan kita aktifkan berikutnya 😄'
-      )
+   openScanner()
     })
 
     // REALTIME
@@ -592,9 +612,119 @@
     // INITIAL
 
     loadTasks()
-
+const scannerModal =
+document.getElementById(
+  'scanner-modal'
+)
+const closeScannerBtn =
+document.getElementById(
+  'close-scanner'
+)
+let html5QrCode = null
+function openScanner() {
+  scannerModal
+    .classList
+    .remove('hidden')
+  scannerModal
+    .classList
+    .add('flex')
+  html5QrCode =
+    new Html5Qrcode(
+      'reader'
+    )
+  html5QrCode.start(
+    {
+      facingMode: 'environment'
+    },
+    {
+      fps: 10,
+      qrbox: 250
+    },
+    async (decodedText) => {
+      // SUCCESS
+      await html5QrCode.stop()
+      scannerModal
+        .classList
+        .add('hidden')
+      handleQRResult(
+        decodedText
+      )
+    },
+    (errorMessage) => {
+      // ignore scan errors
+    }
+  )
+}
+closeScannerBtn.addEventListener(
+  'click',
+  async () => {
+  if(html5QrCode) {
+    await html5QrCode.stop()
+  }
+  scannerModal
+    .classList
+    .add('hidden')
+})
+async function handleQRResult(qrText) {
+  try {
+    const url =
+      new URL(qrText)
+    const token =
+      url.searchParams.get(
+        'token'
+      )
+    if(!token) {
+      alert(
+        'QR tidak valid'
+      )
+      return
+    }
+    // FIND DELIVERY
+    const {
+      data,
+      error
+    } = await supabase
+    .from('deliveries')
+    .select('*')
+    .eq('qr_token', token)
+    .single()
+    if(error || !data) {
+      alert(
+        'Pengantaran tidak ditemukan'
+      )
+      return
+    }
+    // ASSIGN TO COURIER
+    const { error: updateError } =
+      await supabase
+      .from('deliveries')
+      .update({
+        courier_id:
+          courierSession.id,
+        courier_name:
+          courierSession.nama_kurir,
+        status:
+          'on_delivery'
+      })
+      .eq('id', data.id)
+    if(updateError) {
+      alert(
+        updateError.message
+      )
+      return
+    }
+    alert(
+      'Pengantaran berhasil diambil 😄'
+    )
+    loadTasks()
+  } catch(err) {
+    alert(
+      'QR tidak valid'
+    )
+  }
+}
   </script>
-
+<script src="https://unpkg.com/html5-qrcode"></script>
 </body>
 
 </html>
