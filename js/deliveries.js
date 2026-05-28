@@ -1,4 +1,4 @@
-import { supabase }
+  import { supabase }
 from './supabase.js'
 /* ======================================================
    ELEMENT
@@ -564,7 +564,7 @@ async (id) => {
   .classList.add(
     'flex'
   )
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+ 
   // QR
   const qrBox =
     document.getElementById(
