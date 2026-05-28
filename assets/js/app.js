@@ -1,5 +1,3 @@
-console.log('APP JS ACTIVE')
-
 import { supabase } from './supabase.js'
 /* ======================================================
    SESSION
@@ -18,22 +16,20 @@ const isSuperAdmin =
 adminSession.role ===
 'superadmin'
 /* ======================================================
-   ELEMENT
+   ELEMENTS
 ====================================================== */
-const sections = {
-  deliveries:
-    document.getElementById(
-      'deliveries-section'
-    ),
-  zones:
-    document.getElementById(
-      'zones-section'
-    ),
-  couriers:
-    document.getElementById(
-      'couriers-section'
-    )
-}
+const deliverySection =
+document.getElementById(
+  'deliveries-section'
+)
+const zonesSection =
+document.getElementById(
+  'zones-section'
+)
+const couriersSection =
+document.getElementById(
+  'couriers-section'
+)
 const menus =
 document.querySelectorAll(
   '.sidebar-menu'
@@ -80,32 +76,84 @@ if(!isSuperAdmin) {
   })
 }
 /* ======================================================
-   TAB SWITCH
+   SECTION
 ====================================================== */
-function openSection(name) {
-  Object.values(sections)
-  .forEach((section) => {
-    section.classList.add(
-      'hidden'
-    )
-  })
-  sections[name]
-  .classList.remove(
+function hideAllSections() {
+  deliverySection.classList.add(
     'hidden'
   )
+  zonesSection.classList.add(
+    'hidden'
+  )
+  couriersSection.classList.add(
+    'hidden'
+  )
+}
+function resetMenuActive() {
   menus.forEach((menu) => {
     menu.classList.remove(
       'active'
     )
   })
-  document
-  .getElementById(
-    `menu-${name}`
+}
+function openSection(
+  section,
+  menuId
+) {
+  hideAllSections()
+  section.classList.remove(
+    'hidden'
   )
+  resetMenuActive()
+  document
+  .getElementById(menuId)
   .classList.add(
     'active'
   )
+  // SEARCH ONLY DELIVERY
+  const searchInput =
+    document.getElementById(
+      'search-input'
+    )
+  const startDate =
+    document.getElementById(
+      'start-date'
+    )
+  const endDate =
+    document.getElementById(
+      'end-date'
+    )
+  if(section === deliverySection) {
+    searchInput.style.display =
+      'block'
+    startDate.style.display =
+      'block'
+    endDate.style.display =
+      'block'
+    document
+    .querySelector(
+      '.grid.grid-cols-1.md\\:grid-cols-2.xl\\:grid-cols-4'
+    )
+    .style.display =
+      'grid'
+  } else {
+    searchInput.style.display =
+      'none'
+    startDate.style.display =
+      'none'
+    endDate.style.display =
+      'none'
+    document
+    .querySelector(
+      '.grid.grid-cols-1.md\\:grid-cols-2.xl\\:grid-cols-4'
+    )
+    .style.display =
+      'none'
+  }
 }
+/* ======================================================
+   TAB CLICK
+====================================================== */
 document
 .getElementById(
   'menu-deliveries'
@@ -113,9 +161,12 @@ document
 .addEventListener(
   'click',
   () => {
-    openSection(
-      'deliveries'
-    )
+  openSection(
+    deliverySection,
+    'menu-deliveries'
+  )
+  loadDeliveries()
+  loadAnalytics()
 })
 document
 .getElementById(
@@ -124,10 +175,11 @@ document
 ?.addEventListener(
   'click',
   () => {
-    openSection(
-      'zones'
-    )
-    loadZones()
+  openSection(
+    zonesSection,
+    'menu-zones'
+  )
+  loadZones()
 })
 document
 .getElementById(
@@ -136,10 +188,11 @@ document
 ?.addEventListener(
   'click',
   () => {
-    openSection(
-      'couriers'
-    )
-    loadCouriers()
+  openSection(
+    couriersSection,
+    'menu-couriers'
+  )
+  loadCouriers()
 })
 /* ======================================================
    MODAL
@@ -161,7 +214,7 @@ function closeModal(modal) {
   )
 }
 /* ======================================================
-   CLOSE BUTTON
+   CLOSE MODAL BUTTON
 ====================================================== */
 document
 .querySelectorAll(
@@ -171,22 +224,22 @@ document
   btn.addEventListener(
     'click',
     () => {
-      closeModal(
-        deliveryModal
-      )
-      closeModal(
-        courierModal
-      )
-      closeModal(
-        zoneModal
-      )
-      closeModal(
-        qrModal
-      )
+    closeModal(
+      deliveryModal
+    )
+    closeModal(
+      courierModal
+    )
+    closeModal(
+      zoneModal
+    )
+    closeModal(
+      qrModal
+    )
   })
 })
 /* ======================================================
-   CLICK OUTSIDE MODAL
+   CLICK OUTSIDE
 ====================================================== */
 window.addEventListener(
   'click',
@@ -213,7 +266,7 @@ window.addEventListener(
   }
 })
 /* ======================================================
-   OPEN MODAL BUTTON
+   OPEN BUTTON
 ====================================================== */
 document
 .getElementById(
@@ -222,9 +275,9 @@ document
 ?.addEventListener(
   'click',
   () => {
-    openModal(
-      deliveryModal
-    )
+  openModal(
+    deliveryModal
+  )
 })
 document
 .getElementById(
@@ -233,9 +286,9 @@ document
 ?.addEventListener(
   'click',
   () => {
-    openModal(
-      courierModal
-    )
+  openModal(
+    courierModal
+  )
 })
 document
 .getElementById(
@@ -244,9 +297,9 @@ document
 ?.addEventListener(
   'click',
   () => {
-    openModal(
-      zoneModal
-    )
+  openModal(
+    zoneModal
+  )
 })
 /* ======================================================
    ANALYTICS
@@ -280,7 +333,6 @@ async function loadAnalytics() {
   document.getElementById(
     'completed-count'
   ).innerText = completed
-  // ONLINE COURIERS
   const {
     data: couriers
   } = await supabase
@@ -299,10 +351,7 @@ async function loadAnalytics() {
    LOAD DELIVERIES
 ====================================================== */
 async function loadDeliveries() {
-  const {
-    data,
-    error
-  } = await supabase
+  let query = supabase
   .from('deliveries')
   .select('*')
   .order(
@@ -311,10 +360,39 @@ async function loadDeliveries() {
       ascending: false
     }
   )
-  if(error) {
-    console.log(error)
-    return
+  const keyword =
+    document.getElementById(
+      'search-input'
+    ).value
+  const startDate =
+    document.getElementById(
+      'start-date'
+    ).value
+  const endDate =
+    document.getElementById(
+      'end-date'
+    ).value
+  if(keyword) {
+    query = query.ilike(
+      'patient_name',
+      `%${keyword}%`
+    )
   }
+  if(startDate) {
+    query = query.gte(
+      'created_at',
+      startDate
+    )
+  }
+  if(endDate) {
+    query = query.lte(
+      'created_at',
+      endDate + 'T23:59:59'
+    )
+  }
+  const {
+    data
+  } = await query
   deliveryTable.innerHTML = ''
   data.forEach((item) => {
     let badge = `
@@ -373,22 +451,22 @@ async function loadDeliveries() {
             >
               QR
             </button>
+            <button
+              onclick="editDelivery('${item.id}')"
+              class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm"
+            >
+              Edit
+            </button>
             ${
               isSuperAdmin
               ?
               `
-                <button
-                  onclick="editDelivery('${item.id}')"
-                  class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm"
-                >
-                  Edit
-                </button>
-                <button
-                  onclick="deleteDelivery('${item.id}')"
-                  class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
-                >
-                  Hapus
-                </button>
+              <button
+                onclick="deleteDelivery('${item.id}')"
+                class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
+              >
+                Hapus
+              </button>
               `
               : ''
             }
@@ -403,18 +481,11 @@ async function loadDeliveries() {
 ====================================================== */
 async function loadCouriers() {
   const {
-    data,
-    error
+    data
   } = await supabase
   .from('couriers')
   .select('*')
-  .order(
-    'nama'
-  )
-  if(error) {
-    console.log(error)
-    return
-  }
+  .order('nama')
   couriersTable.innerHTML = ''
   data.forEach((item) => {
     let badge = `
@@ -435,7 +506,7 @@ async function loadCouriers() {
           ${item.nama}
         </td>
         <td class="px-6 py-5">
-          ${item.email || '-'}
+          ${item.username || '-'}
         </td>
         <td class="px-6 py-5">
           ${badge}
@@ -443,17 +514,30 @@ async function loadCouriers() {
         <td class="px-6 py-5">
           <div class="flex gap-2">
             <button
-              onclick="toggleCourier('${item.id}', ${item.is_online})"
+              onclick="editCourier('${item.id}', '${item.nama}', '${item.username}', '${item.no_hp}')"
               class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm"
+            >
+              Edit
+            </button>
+            <button
+              onclick="toggleCourier('${item.id}', ${item.is_online})"
+              class="bg-slate-100 px-4 py-2 rounded-xl text-sm"
             >
               Toggle
             </button>
-            <button
-              onclick="deleteCourier('${item.id}')"
-              class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
-            >
-              Hapus
-            </button>
+            ${
+              isSuperAdmin
+              ?
+              `
+              <button
+                onclick="deleteCourier('${item.id}')"
+                class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
+              >
+                Hapus
+              </button>
+              `
+              : ''
+            }
           </div>
         </td>
       </tr>
@@ -464,14 +548,23 @@ async function loadCouriers() {
    LOAD ZONES
 ====================================================== */
 async function loadZones() {
-  const {
-    data
-  } = await supabase
+  let query = supabase
   .from('delivery_zones')
   .select('*')
-  .order(
-    'kecamatan'
-  )
+  .order('kecamatan')
+  const filter =
+    document.getElementById(
+      'zone-filter'
+    )?.value
+  if(filter) {
+    query = query.eq(
+      'kecamatan',
+      filter
+    )
+  }
+  const {
+    data
+  } = await query
   zonesTable.innerHTML = ''
   data.forEach((item) => {
     zonesTable.innerHTML += `
@@ -490,17 +583,24 @@ async function loadZones() {
         <td class="px-6 py-5">
           <div class="flex gap-2">
             <button
-              onclick="editZone('${item.id}', '${item.kecamatan}', '${item.kelurahan}', '${item.ongkir}')"
+              onclick="editZone('${item.id}', '${item.ongkir}')"
               class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm"
             >
               Edit
             </button>
-            <button
-              onclick="deleteZone('${item.id}')"
-              class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
-            >
-              Hapus
-            </button>
+            ${
+              isSuperAdmin
+              ?
+              `
+              <button
+                onclick="deleteZone('${item.id}')"
+                class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
+              >
+                Hapus
+              </button>
+              `
+              : ''
+            }
           </div>
         </td>
       </tr>
@@ -508,87 +608,40 @@ async function loadZones() {
   })
 }
 /* ======================================================
-   KECAMATAN
+   FILTER EVENTS
 ====================================================== */
-const kecamatanList = [
-  'Ternate Selatan',
-  'Ternate Tengah',
-  'Ternate Utara',
-  'Pulau Ternate',
-  'Ternate Barat'
-]
-const kecamatanSelect =
-document.getElementById(
-  'kecamatan'
+document
+.getElementById(
+  'search-input'
 )
-if(kecamatanSelect) {
-  kecamatanSelect.innerHTML = `
-    <option value="">
-      Pilih Kecamatan
-    </option>
-  `
-  kecamatanList.forEach((item) => {
-    kecamatanSelect.innerHTML += `
-      <option value="${item}">
-        ${item}
-      </option>
-    `
-  })
-}
-/* ======================================================
-   LOAD KELURAHAN
-====================================================== */
-const kelurahanSelect =
-document.getElementById(
-  'kelurahan'
+?.addEventListener(
+  'input',
+  loadDeliveries
 )
-const ongkirDisplay =
-document.getElementById(
-  'ongkir-display'
+document
+.getElementById(
+  'start-date'
 )
-let selectedOngkir = 0
-kecamatanSelect?.addEventListener(
+?.addEventListener(
   'change',
-  async () => {
-  const {
-    data
-  } = await supabase
-  .from('delivery_zones')
-  .select('*')
-  .eq(
-    'kecamatan',
-    kecamatanSelect.value
-  )
-  kelurahanSelect.innerHTML = `
-    <option value="">
-      Pilih Kelurahan
-    </option>
-  `
-  data.forEach((item) => {
-    kelurahanSelect.innerHTML += `
-      <option
-        value="${item.kelurahan}"
-        data-ongkir="${item.ongkir}"
-      >
-        ${item.kelurahan}
-      </option>
-    `
-  })
-})
-kelurahanSelect?.addEventListener(
+  loadDeliveries
+)
+document
+.getElementById(
+  'end-date'
+)
+?.addEventListener(
   'change',
-  () => {
-  const selected =
-    kelurahanSelect.options[
-      kelurahanSelect.selectedIndex
-    ]
-  selectedOngkir =
-    selected.dataset.ongkir
-  ongkirDisplay.innerText =
-    `Rp ${parseInt(
-      selectedOngkir
-    ).toLocaleString()}`
-})
+  loadDeliveries
+)
+document
+.getElementById(
+  'zone-filter'
+)
+?.addEventListener(
+  'change',
+  loadZones
+)
 /* ======================================================
    CREATE COURIER
 ====================================================== */
@@ -604,11 +657,11 @@ document
     document.getElementById(
       'courier-name'
     ).value
-  const email =
+  const username =
     document.getElementById(
       'courier-email'
     ).value
-  const password =
+  const no_hp =
     document.getElementById(
       'courier-password'
     ).value
@@ -619,8 +672,9 @@ document
   .insert([
     {
       nama,
-      email,
-      password,
+      username,
+      no_hp,
+      password: '123456',
       is_online: false
     }
   ])
@@ -631,170 +685,63 @@ document
   alert(
     'Kurir berhasil ditambahkan'
   )
+  closeModal(
+    courierModal
+  )
   document
   .getElementById(
     'courier-form'
   )
   .reset()
-  closeModal(
-    courierModal
-  )
   loadCouriers()
 })
 /* ======================================================
-   CREATE DELIVERY
+   EDIT COURIER
 ====================================================== */
-document
-.getElementById(
-  'delivery-form'
-)
-?.addEventListener(
-  'submit',
-  async (e) => {
-  e.preventDefault()
-  const patient_name =
-    document.getElementById(
-      'patient-name'
-    ).value
-  const patient_phone =
-    document.getElementById(
-      'patient-phone'
-    ).value
-  const kelurahan =
-    kelurahanSelect.value
-  const address =
-    document.getElementById(
-      'address'
-    ).value
-  const qr_token =
-    crypto.randomUUID()
-  const {
-    data: courier
-  } = await supabase
-  .from('couriers')
-  .select('*')
-  .eq(
-    'is_online',
-    true
-  )
-  .limit(1)
-  .single()
-  const {
-    error
-  } = await supabase
-  .from('deliveries')
-  .insert([
-    {
-      patient_name,
-      patient_phone,
-      kelurahan,
-      address,
-      qr_token,
-      ongkir:
-        selectedOngkir,
-      courier_id:
-        courier?.id || null,
-      courier_name:
-        courier?.nama || null,
-      status:
-        courier
-        ? 'on_delivery'
-        : 'pending'
-    }
-  ])
-  if(error) {
-    alert(error.message)
-    return
-  }
-  alert(
-    'Pengantaran berhasil dibuat'
-  )
-  document
-  .getElementById(
-    'delivery-form'
-  )
-  .reset()
-  closeModal(
-    deliveryModal
-  )
-  showQR(qr_token)
-  loadDeliveries()
-  loadAnalytics()
-})
-/* ======================================================
-   CREATE ZONE
-====================================================== */
-document
-.getElementById(
-  'zone-form'
-)
-?.addEventListener(
-  'submit',
-  async (e) => {
-  e.preventDefault()
-  const kecamatan =
-    document.getElementById(
-      'zone-kecamatan'
-    ).value
-  const kelurahan =
-    document.getElementById(
-      'zone-kelurahan'
-    ).value
-  const ongkir =
-    document.getElementById(
-      'zone-ongkir'
-    ).value
-  await supabase
-  .from('delivery_zones')
-  .insert([
-    {
-      kecamatan,
-      kelurahan,
-      ongkir
-    }
-  ])
-  closeModal(
-    zoneModal
-  )
-  document
-  .getElementById(
-    'zone-form'
-  )
-  .reset()
-  loadZones()
-})
-/* ======================================================
-   QR
-====================================================== */
-window.showQR = (token) => {
-  openModal(
-    qrModal
-  )
-  const qrBox =
-    document.getElementById(
-      'qrcode'
+window.editCourier =
+async (
+  id,
+  nama,
+  username,
+  no_hp
+) => {
+  const newNama =
+    prompt(
+      'Nama',
+      nama
     )
-  qrBox.innerHTML = ''
-  new QRCode(
-    qrBox,
-    {
-      text:
-`${window.location.origin}/sobat-kita/tracking.html?token=${token}`,
-      width: 220,
-      height: 220
-    }
-  )
+  if(!newNama) return
+  const newUsername =
+    prompt(
+      'Username',
+      username
+    )
+  const newNoHp =
+    prompt(
+      'No HP',
+      no_hp
+    )
+  await supabase
+  .from('couriers')
+  .update({
+    nama:
+      newNama,
+    username:
+      newUsername,
+    no_hp:
+      newNoHp
+  })
+  .eq('id', id)
+  loadCouriers()
 }
 /* ======================================================
    DELETE
 ====================================================== */
 window.deleteCourier =
 async (id) => {
-  const yes =
-    confirm(
-      'Hapus kurir?'
-    )
-  if(!yes) return
+  if(!confirm(
+    'Hapus kurir?'
+  )) return
   await supabase
   .from('couriers')
   .delete()
@@ -803,11 +750,9 @@ async (id) => {
 }
 window.deleteZone =
 async (id) => {
-  const yes =
-    confirm(
-      'Hapus ongkir?'
-    )
-  if(!yes) return
+  if(!confirm(
+    'Hapus ongkir?'
+  )) return
   await supabase
   .from('delivery_zones')
   .delete()
@@ -816,11 +761,9 @@ async (id) => {
 }
 window.deleteDelivery =
 async (id) => {
-  const yes =
-    confirm(
-      'Hapus pengantaran?'
-    )
-  if(!yes) return
+  if(!confirm(
+    'Hapus pengantaran?'
+  )) return
   await supabase
   .from('deliveries')
   .delete()
@@ -848,13 +791,11 @@ async (id, current) => {
 window.editZone =
 async (
   id,
-  kecamatan,
-  kelurahan,
   ongkir
 ) => {
   const newOngkir =
     prompt(
-      `Edit ongkir ${kelurahan}`,
+      'Edit Ongkir',
       ongkir
     )
   if(!newOngkir) return
@@ -868,73 +809,27 @@ async (
   loadZones()
 }
 /* ======================================================
-   EDIT DELIVERY
+   QR
 ====================================================== */
-window.editDelivery =
-async (id) => {
-  const status =
-    prompt(
-      'pending / on_delivery / completed'
-    )
-  if(!status) return
-  await supabase
-  .from('deliveries')
-  .update({
-    status
-  })
-  .eq('id', id)
-  loadDeliveries()
-  loadAnalytics()
-}
-/* ======================================================
-   SEARCH
-====================================================== */
-document
-.getElementById(
-  'search-input'
-)
-?.addEventListener(
-  'input',
-  async (e) => {
-  const keyword =
-    e.target.value
-  const {
-    data
-  } = await supabase
-  .from('deliveries')
-  .select('*')
-  .ilike(
-    'patient_name',
-    `%${keyword}%`
+window.showQR = (token) => {
+  openModal(
+    qrModal
   )
-  deliveryTable.innerHTML = ''
-  data.forEach((item) => {
-    deliveryTable.innerHTML += `
-      <tr class="border-b">
-        <td class="px-6 py-5">
-          ${item.patient_name}
-        </td>
-        <td class="px-6 py-5">
-          ${item.kelurahan}
-        </td>
-        <td class="px-6 py-5">
-          ${item.courier_name || '-'}
-        </td>
-        <td class="px-6 py-5">
-          ${item.status}
-        </td>
-        <td class="px-6 py-5">
-          Rp ${parseInt(
-            item.ongkir || 0
-          ).toLocaleString()}
-        </td>
-        <td class="px-6 py-5">
-          -
-        </td>
-      </tr>
-    `
-  })
-})
+  const qrBox =
+    document.getElementById(
+      'qrcode'
+    )
+  qrBox.innerHTML = ''
+  new QRCode(
+    qrBox,
+    {
+      text:
+`${window.location.origin}/sobat-kita/tracking.html?token=${token}`,
+      width: 220,
+      height: 220
+    }
+  )
+}
 /* ======================================================
    LOGOUT
 ====================================================== */
@@ -954,5 +849,9 @@ document
 /* ======================================================
    INITIAL
 ====================================================== */
+openSection(
+  deliverySection,
+  'menu-deliveries'
+)
 loadAnalytics()
 loadDeliveries()
