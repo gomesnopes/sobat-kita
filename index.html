@@ -975,5 +975,88 @@
     </form>
   </div>
 </div>
+  <!-- ===================================================== -->
+<!-- EDIT COURIER MODAL -->
+<!-- ===================================================== -->
+<div
+  id="edit-courier-modal"
+  class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-5"
+>
+  <div
+    class="bg-white rounded-3xl w-full max-w-xl p-8 relative"
+  >
+    <!-- CLOSE -->
+    <button
+      id="close-edit-courier-modal"
+      class="absolute top-5 right-5 text-2xl"
+    >
+      ✕
+    </button>
+    <!-- TITLE -->
+    <h2 class="text-2xl font-bold mb-6">
+      Edit Kurir
+    </h2>
+    <!-- FORM -->
+    <form
+      id="edit-courier-form"
+      class="space-y-5"
+    >
+      <input
+        type="hidden"
+        id="edit-courier-id"
+      >
+      <!-- NAMA -->
+      <input
+        type="text"
+        id="edit-courier-name"
+        placeholder="Nama Kurir"
+        required
+        class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+      >
+      <!-- USERNAME -->
+      <input
+        type="text"
+        id="edit-courier-username"
+        placeholder="Username"
+        required
+        class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+      >
+      <!-- NO HP -->
+      <input
+        type="text"
+        id="edit-courier-phone"
+        placeholder="No HP"
+        required
+        class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+      >
+      <!-- PASSWORD -->
+      <input
+        type="password"
+        id="edit-courier-password"
+        placeholder="Password Baru"
+        class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+      >
+      <!-- STATUS -->
+      <select
+        id="edit-courier-status"
+        class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+      >
+        <option value="true">
+          Online
+        </option>
+        <option value="false">
+          Offline
+        </option>
+      </select>
+      <!-- SUBMIT -->
+      <button
+        type="submit"
+        class="w-full bg-green-700 hover:bg-green-800 text-white py-4 rounded-2xl font-semibold"
+      >
+        Update Kurir
+      </button>
+    </form>
+  </div>
+</div>
 </body>
 </html>
