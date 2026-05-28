@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js'
 /* ======================================================
-   ADMIN SESSION
+   SESSION
 ====================================================== */
 const adminSession =
 JSON.parse(
@@ -16,39 +16,37 @@ const isSuperAdmin =
 adminSession.role ===
 'superadmin'
 /* ======================================================
-   ELEMENTS
+   ELEMENT
 ====================================================== */
-const sidebar =
-document.getElementById(
-  'sidebar'
-)
-const toggleSidebar =
-document.getElementById(
-  'toggle-sidebar'
-)
-const deliverySection =
-document.getElementById(
-  'deliveries-section'
-)
-const zonesSection =
-document.getElementById(
-  'zones-section'
-)
-const couriersSection =
-document.getElementById(
-  'couriers-section'
+const sections = {
+  deliveries:
+    document.getElementById(
+      'deliveries-section'
+    ),
+  zones:
+    document.getElementById(
+      'zones-section'
+    ),
+  couriers:
+    document.getElementById(
+      'couriers-section'
+    )
+}
+const menus =
+document.querySelectorAll(
+  '.sidebar-menu'
 )
 const deliveryTable =
 document.getElementById(
   'delivery-table-body'
 )
-const courierTable =
-document.getElementById(
-  'couriers-table-body'
-)
 const zonesTable =
 document.getElementById(
   'zones-table-body'
+)
+const couriersTable =
+document.getElementById(
+  'couriers-table-body'
 )
 const deliveryModal =
 document.getElementById(
@@ -62,55 +60,12 @@ const zoneModal =
 document.getElementById(
   'zone-modal'
 )
-const detailModal =
-document.getElementById(
-  'detail-modal'
-)
 const qrModal =
 document.getElementById(
   'qr-modal'
 )
-const searchInput =
-document.getElementById(
-  'search-input'
-)
-const startDate =
-document.getElementById(
-  'start-date'
-)
-const endDate =
-document.getElementById(
-  'end-date'
-)
-const deliveryForm =
-document.getElementById(
-  'delivery-form'
-)
-const courierForm =
-document.getElementById(
-  'courier-form'
-)
-const zoneForm =
-document.getElementById(
-  'zone-form'
-)
-const kecamatanSelect =
-document.getElementById(
-  'kecamatan'
-)
-const kelurahanSelect =
-document.getElementById(
-  'kelurahan'
-)
-const ongkirDisplay =
-document.getElementById(
-  'ongkir-display'
-)
-let currentPage = 1
-const limit = 10
-let selectedOngkir = 0
 /* ======================================================
-   ROLE SYSTEM
+   ROLE
 ====================================================== */
 if(!isSuperAdmin) {
   document
@@ -123,46 +78,41 @@ if(!isSuperAdmin) {
   })
 }
 /* ======================================================
-   SIDEBAR TOGGLE
+   TAB SWITCH
 ====================================================== */
-if(toggleSidebar) {
-  toggleSidebar.addEventListener(
-    'click',
-    () => {
-      sidebar.classList.toggle(
-        'w-72'
-      )
-      sidebar.classList.toggle(
-        'w-24'
-      )
+function openSection(name) {
+  Object.values(sections)
+  .forEach((section) => {
+    section.classList.add(
+      'hidden'
+    )
   })
-}
-/* ======================================================
-   NAVIGATION
-====================================================== */
-function openSection(section) {
-  deliverySection.classList.add(
+  sections[name]
+  .classList.remove(
     'hidden'
   )
-  zonesSection.classList.add(
-    'hidden'
+  menus.forEach((menu) => {
+    menu.classList.remove(
+      'active'
+    )
+  })
+  document
+  .getElementById(
+    `menu-${name}`
   )
-  couriersSection.classList.add(
-    'hidden'
-  )
-  section.classList.remove(
-    'hidden'
+  .classList.add(
+    'active'
   )
 }
 document
 .getElementById(
   'menu-deliveries'
 )
-?.addEventListener(
+.addEventListener(
   'click',
   () => {
     openSection(
-      deliverySection
+      'deliveries'
     )
 })
 document
@@ -173,7 +123,7 @@ document
   'click',
   () => {
     openSection(
-      zonesSection
+      'zones'
     )
     loadZones()
 })
@@ -185,12 +135,12 @@ document
   'click',
   () => {
     openSection(
-      couriersSection
+      'couriers'
     )
     loadCouriers()
 })
 /* ======================================================
-   MODALS
+   MODAL
 ====================================================== */
 function openModal(modal) {
   modal.classList.remove(
@@ -201,54 +151,67 @@ function openModal(modal) {
   )
 }
 function closeModal(modal) {
+  modal.classList.remove(
+    'flex'
+  )
   modal.classList.add(
     'hidden'
   )
 }
 /* ======================================================
-   AUTO CLOSE MODAL
+   CLOSE BUTTON
+====================================================== */
+document
+.querySelectorAll(
+  '.close-modal'
+)
+.forEach((btn) => {
+  btn.addEventListener(
+    'click',
+    () => {
+      closeModal(
+        deliveryModal
+      )
+      closeModal(
+        courierModal
+      )
+      closeModal(
+        zoneModal
+      )
+      closeModal(
+        qrModal
+      )
+  })
+})
+/* ======================================================
+   CLICK OUTSIDE MODAL
 ====================================================== */
 window.addEventListener(
   'click',
   (e) => {
-  if(
-    e.target === deliveryModal
-  ) {
+  if(e.target === deliveryModal) {
     closeModal(
       deliveryModal
     )
   }
-  if(
-    e.target === courierModal
-  ) {
+  if(e.target === courierModal) {
     closeModal(
       courierModal
     )
   }
-  if(
-    e.target === zoneModal
-  ) {
+  if(e.target === zoneModal) {
     closeModal(
       zoneModal
     )
   }
-  if(
-    e.target === detailModal
-  ) {
-    closeModal(
-      detailModal
-    )
-  }
-  if(
-    e.target === qrModal
-  ) {
+  if(e.target === qrModal) {
     closeModal(
       qrModal
     )
   }
 })
 /* ======================================================
-   BUTTON MODAL
+   OPEN MODAL BUTTON
 ====================================================== */
 document
 .getElementById(
@@ -256,11 +219,10 @@ document
 )
 ?.addEventListener(
   'click',
-  async () => {
+  () => {
     openModal(
       deliveryModal
     )
-    await loadKecamatan()
 })
 document
 .getElementById(
@@ -285,43 +247,60 @@ document
     )
 })
 /* ======================================================
-   CLOSE BUTTONS
+   ANALYTICS
 ====================================================== */
-document
-.querySelectorAll(
-  '.close-modal'
-)
-.forEach((btn) => {
-  btn.addEventListener(
-    'click',
-    () => {
-      closeModal(
-        deliveryModal
-      )
-      closeModal(
-        courierModal
-      )
-      closeModal(
-        zoneModal
-      )
-      closeModal(
-        detailModal
-      )
-      closeModal(
-        qrModal
-      )
-  })
-})
+async function loadAnalytics() {
+  const {
+    data
+  } = await supabase
+  .from('deliveries')
+  .select('*')
+  const total =
+    data?.length || 0
+  const onDelivery =
+    data?.filter(
+      item =>
+      item.status ===
+      'on_delivery'
+    ).length || 0
+  const completed =
+    data?.filter(
+      item =>
+      item.status ===
+      'completed'
+    ).length || 0
+  document.getElementById(
+    'total-deliveries'
+  ).innerText = total
+  document.getElementById(
+    'on-delivery-count'
+  ).innerText = onDelivery
+  document.getElementById(
+    'completed-count'
+  ).innerText = completed
+  // ONLINE COURIERS
+  const {
+    data: couriers
+  } = await supabase
+  .from('couriers')
+  .select('*')
+  const online =
+    couriers?.filter(
+      item =>
+      item.is_online
+    ).length || 0
+  document.getElementById(
+    'online-couriers'
+  ).innerText = online
+}
 /* ======================================================
    LOAD DELIVERIES
 ====================================================== */
 async function loadDeliveries() {
-  const from =
-    (currentPage - 1)
-    * limit
-  const to =
-    from + limit - 1
-  let query = supabase
+  const {
+    data,
+    error
+  } = await supabase
   .from('deliveries')
   .select('*')
   .order(
@@ -330,58 +309,11 @@ async function loadDeliveries() {
       ascending: false
     }
   )
-  .range(from, to)
-  // SEARCH
-  if(searchInput?.value) {
-    query = query.ilike(
-      'patient_name',
-      `%${searchInput.value}%`
-    )
-  }
-  // FILTER DATE
-  if(startDate?.value) {
-    query = query.gte(
-      'created_at',
-      startDate.value
-    )
-  }
-  if(endDate?.value) {
-    query = query.lte(
-      'created_at',
-      endDate.value + 'T23:59:59'
-    )
-  }
-  const {
-    data,
-    error
-  } = await query
   if(error) {
     console.log(error)
     return
   }
-  renderDeliveries(
-    data || []
-  )
-}
-/* ======================================================
-   RENDER DELIVERIES
-====================================================== */
-function renderDeliveries(data) {
-  if(!deliveryTable) return
   deliveryTable.innerHTML = ''
-  if(data.length === 0) {
-    deliveryTable.innerHTML = `
-      <tr>
-        <td
-          colspan="6"
-          class="text-center py-10 text-slate-400"
-        >
-          Tidak ada data
-        </td>
-      </tr>
-    `
-    return
-  }
   data.forEach((item) => {
     let badge = `
       <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs">
@@ -403,7 +335,7 @@ function renderDeliveries(data) {
       `
     }
     deliveryTable.innerHTML += `
-      <tr class="border-b hover:bg-slate-50">
+      <tr class="border-b">
         <td class="px-6 py-5">
           <p class="font-semibold">
             ${item.patient_name}
@@ -413,7 +345,7 @@ function renderDeliveries(data) {
           </p>
         </td>
         <td class="px-6 py-5">
-          <p class="font-medium">
+          <p>
             ${item.kelurahan}
           </p>
           <p class="text-sm text-slate-500 mt-1">
@@ -426,7 +358,7 @@ function renderDeliveries(data) {
         <td class="px-6 py-5">
           ${badge}
         </td>
-        <td class="px-6 py-5">
+        <td class="px-6 py-5 font-semibold text-green-700">
           Rp ${parseInt(
             item.ongkir || 0
           ).toLocaleString()}
@@ -435,7 +367,7 @@ function renderDeliveries(data) {
           <div class="flex gap-2">
             <button
               onclick="showQR('${item.qr_token}')"
-              class="bg-slate-100 px-3 py-2 rounded-xl text-sm"
+              class="bg-slate-100 px-4 py-2 rounded-xl text-sm"
             >
               QR
             </button>
@@ -445,13 +377,13 @@ function renderDeliveries(data) {
               `
                 <button
                   onclick="editDelivery('${item.id}')"
-                  class="bg-blue-100 text-blue-700 px-3 py-2 rounded-xl text-sm"
+                  class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm"
                 >
                   Edit
                 </button>
                 <button
                   onclick="deleteDelivery('${item.id}')"
-                  class="bg-red-100 text-red-700 px-3 py-2 rounded-xl text-sm"
+                  class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
                 >
                   Hapus
                 </button>
@@ -468,7 +400,6 @@ function renderDeliveries(data) {
    LOAD COURIERS
 ====================================================== */
 async function loadCouriers() {
-  if(!courierTable) return
   const {
     data,
     error
@@ -476,58 +407,51 @@ async function loadCouriers() {
   .from('couriers')
   .select('*')
   .order(
-    'nama_kurir'
+    'nama'
   )
   if(error) {
     console.log(error)
     return
   }
-  courierTable.innerHTML = ''
-  ;(data || []).forEach((item) => {
-    let statusBadge = `
+  couriersTable.innerHTML = ''
+  data.forEach((item) => {
+    let badge = `
       <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs">
         Offline
       </span>
     `
     if(item.is_online) {
-      statusBadge = `
+      badge = `
         <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
           Online
         </span>
       `
     }
-    courierTable.innerHTML += `
-      <tr class="border-b hover:bg-slate-50">
+    couriersTable.innerHTML += `
+      <tr class="border-b">
         <td class="px-6 py-5 font-semibold">
-          ${item.nama_kurir}
+          ${item.nama}
         </td>
         <td class="px-6 py-5">
           ${item.email || '-'}
         </td>
         <td class="px-6 py-5">
-          ${statusBadge}
+          ${badge}
         </td>
         <td class="px-6 py-5">
           <div class="flex gap-2">
             <button
               onclick="toggleCourier('${item.id}', ${item.is_online})"
-              class="bg-blue-100 text-blue-700 px-3 py-2 rounded-xl text-sm"
+              class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm"
             >
               Toggle
             </button>
-            ${
-              isSuperAdmin
-              ?
-              `
-              <button
-                onclick="deleteCourier('${item.id}')"
-                class="bg-red-100 text-red-700 px-3 py-2 rounded-xl text-sm"
-              >
-                Hapus
-              </button>
-              `
-              : ''
-            }
+            <button
+              onclick="deleteCourier('${item.id}')"
+              class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
+            >
+              Hapus
+            </button>
           </div>
         </td>
       </tr>
@@ -538,24 +462,18 @@ async function loadCouriers() {
    LOAD ZONES
 ====================================================== */
 async function loadZones() {
-  if(!zonesTable) return
   const {
-    data,
-    error
+    data
   } = await supabase
   .from('delivery_zones')
   .select('*')
   .order(
     'kecamatan'
   )
-  if(error) {
-    console.log(error)
-    return
-  }
   zonesTable.innerHTML = ''
-  ;(data || []).forEach((item) => {
+  data.forEach((item) => {
     zonesTable.innerHTML += `
-      <tr class="border-b hover:bg-slate-50">
+      <tr class="border-b">
         <td class="px-6 py-5">
           ${item.kecamatan}
         </td>
@@ -568,45 +486,46 @@ async function loadZones() {
           ).toLocaleString()}
         </td>
         <td class="px-6 py-5">
-          ${
-            isSuperAdmin
-            ?
-            `
+          <div class="flex gap-2">
+            <button
+              onclick="editZone('${item.id}', '${item.kecamatan}', '${item.kelurahan}', '${item.ongkir}')"
+              class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm"
+            >
+              Edit
+            </button>
             <button
               onclick="deleteZone('${item.id}')"
-              class="bg-red-100 text-red-700 px-3 py-2 rounded-xl text-sm"
+              class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
             >
               Hapus
             </button>
-            `
-            : '-'
-          }
+          </div>
         </td>
       </tr>
     `
   })
 }
 /* ======================================================
-   LOAD KECAMATAN
+   KECAMATAN
 ====================================================== */
-async function loadKecamatan() {
-  const {
-    data
-  } = await supabase
-  .from('delivery_zones')
-  .select('kecamatan')
-  const unique =
-  [...new Set(
-    data.map(
-      item => item.kecamatan
-    )
-  )]
+const kecamatanList = [
+  'Ternate Selatan',
+  'Ternate Tengah',
+  'Ternate Utara',
+  'Pulau Ternate',
+  'Ternate Barat'
+]
+const kecamatanSelect =
+document.getElementById(
+  'kecamatan'
+)
+if(kecamatanSelect) {
   kecamatanSelect.innerHTML = `
     <option value="">
       Pilih Kecamatan
     </option>
   `
-  unique.forEach((item) => {
+  kecamatanList.forEach((item) => {
     kecamatanSelect.innerHTML += `
       <option value="${item}">
         ${item}
@@ -617,9 +536,18 @@ async function loadKecamatan() {
 /* ======================================================
    LOAD KELURAHAN
 ====================================================== */
-async function loadKelurahan(
-  kecamatan
-) {
+const kelurahanSelect =
+document.getElementById(
+  'kelurahan'
+)
+const ongkirDisplay =
+document.getElementById(
+  'ongkir-display'
+)
+let selectedOngkir = 0
+kecamatanSelect?.addEventListener(
+  'change',
+  async () => {
   const {
     data
   } = await supabase
@@ -627,7 +555,7 @@ async function loadKelurahan(
   .select('*')
   .eq(
     'kecamatan',
-    kecamatan
+    kecamatanSelect.value
   )
   kelurahanSelect.innerHTML = `
     <option value="">
@@ -644,121 +572,29 @@ async function loadKelurahan(
       </option>
     `
   })
-}
-kecamatanSelect?.addEventListener(
-  'change',
-  () => {
-    loadKelurahan(
-      kecamatanSelect.value
-    )
 })
 kelurahanSelect?.addEventListener(
   'change',
   () => {
-    const selected =
-      kelurahanSelect.options[
-        kelurahanSelect.selectedIndex
-      ]
-    selectedOngkir =
-      selected.dataset.ongkir
-    ongkirDisplay.innerText =
-      `Rp ${parseInt(
-        selectedOngkir
-      ).toLocaleString()}`
-})
-/* ======================================================
-   AUTO ASSIGN COURIER
-====================================================== */
-async function getAvailableCourier() {
-  const {
-    data
-  } = await supabase
-  .from('couriers')
-  .select('*')
-  .eq(
-    'is_online',
-    true
-  )
-  .order(
-    'last_online_at',
-    {
-      ascending: true
-    }
-  )
-  .limit(1)
-  if(!data || data.length === 0)
-  return null
-  return data[0]
-}
-/* ======================================================
-   CREATE DELIVERY
-====================================================== */
-deliveryForm?.addEventListener(
-  'submit',
-  async (e) => {
-  e.preventDefault()
-  const patientName =
-    document.getElementById(
-      'patient-name'
-    ).value
-  const patientPhone =
-    document.getElementById(
-      'patient-phone'
-    ).value
-  const address =
-    document.getElementById(
-      'address'
-    ).value
-  const kelurahan =
-    kelurahanSelect.value
-  const qrToken =
-    crypto.randomUUID()
-  const courier =
-    await getAvailableCourier()
-  const courierName =
-    courier?.nama_kurir ||
-    'Belum Ada Kurir'
-  const {
-    error
-  } = await supabase
-  .from('deliveries')
-  .insert([
-    {
-      patient_name:
-        patientName,
-      patient_phone:
-        patientPhone,
-      address,
-      kelurahan,
-      courier_id:
-        courier?.id || null,
-      courier_name:
-        courierName,
-      qr_token:
-        qrToken,
-      ongkir:
-        selectedOngkir,
-      status:
-        courier
-        ? 'on_delivery'
-        : 'pending'
-    }
-  ])
-  if(error) {
-    alert(error.message)
-    return
-  }
-  closeModal(
-    deliveryModal
-  )
-  deliveryForm.reset()
-  showQR(qrToken)
-  loadDeliveries()
+  const selected =
+    kelurahanSelect.options[
+      kelurahanSelect.selectedIndex
+    ]
+  selectedOngkir =
+    selected.dataset.ongkir
+  ongkirDisplay.innerText =
+    `Rp ${parseInt(
+      selectedOngkir
+    ).toLocaleString()}`
 })
 /* ======================================================
    CREATE COURIER
 ====================================================== */
-courierForm?.addEventListener(
+document
+.getElementById(
+  'courier-form'
+)
+?.addEventListener(
   'submit',
   async (e) => {
   e.preventDefault()
@@ -780,28 +616,117 @@ courierForm?.addEventListener(
   .from('couriers')
   .insert([
     {
-      nama_kurir:
-        nama,
+      nama,
       email,
       password,
-      role:
-        'courier'
+      is_online: false
     }
   ])
   if(error) {
     alert(error.message)
     return
   }
-  courierForm.reset()
+  alert(
+    'Kurir berhasil ditambahkan'
+  )
+  document
+  .getElementById(
+    'courier-form'
+  )
+  .reset()
   closeModal(
     courierModal
   )
   loadCouriers()
 })
 /* ======================================================
+   CREATE DELIVERY
+====================================================== */
+document
+.getElementById(
+  'delivery-form'
+)
+?.addEventListener(
+  'submit',
+  async (e) => {
+  e.preventDefault()
+  const patient_name =
+    document.getElementById(
+      'patient-name'
+    ).value
+  const patient_phone =
+    document.getElementById(
+      'patient-phone'
+    ).value
+  const kelurahan =
+    kelurahanSelect.value
+  const address =
+    document.getElementById(
+      'address'
+    ).value
+  const qr_token =
+    crypto.randomUUID()
+  const {
+    data: courier
+  } = await supabase
+  .from('couriers')
+  .select('*')
+  .eq(
+    'is_online',
+    true
+  )
+  .limit(1)
+  .single()
+  const {
+    error
+  } = await supabase
+  .from('deliveries')
+  .insert([
+    {
+      patient_name,
+      patient_phone,
+      kelurahan,
+      address,
+      qr_token,
+      ongkir:
+        selectedOngkir,
+      courier_id:
+        courier?.id || null,
+      courier_name:
+        courier?.nama || null,
+      status:
+        courier
+        ? 'on_delivery'
+        : 'pending'
+    }
+  ])
+  if(error) {
+    alert(error.message)
+    return
+  }
+  alert(
+    'Pengantaran berhasil dibuat'
+  )
+  document
+  .getElementById(
+    'delivery-form'
+  )
+  .reset()
+  closeModal(
+    deliveryModal
+  )
+  showQR(qr_token)
+  loadDeliveries()
+  loadAnalytics()
+})
+/* ======================================================
    CREATE ZONE
 ====================================================== */
-zoneForm?.addEventListener(
+document
+.getElementById(
+  'zone-form'
+)
+?.addEventListener(
   'submit',
   async (e) => {
   e.preventDefault()
@@ -826,14 +751,18 @@ zoneForm?.addEventListener(
       ongkir
     }
   ])
-  zoneForm.reset()
   closeModal(
     zoneModal
   )
+  document
+  .getElementById(
+    'zone-form'
+  )
+  .reset()
   loadZones()
 })
 /* ======================================================
-   SHOW QR
+   QR
 ====================================================== */
 window.showQR = (token) => {
   openModal(
@@ -855,42 +784,7 @@ window.showQR = (token) => {
   )
 }
 /* ======================================================
-   EDIT DELIVERY
-====================================================== */
-window.editDelivery =
-async (id) => {
-  const newStatus =
-    prompt(
-      'pending / on_delivery / completed'
-    )
-  if(!newStatus) return
-  await supabase
-  .from('deliveries')
-  .update({
-    status:
-      newStatus
-  })
-  .eq('id', id)
-  loadDeliveries()
-}
-/* ======================================================
-   DELETE DELIVERY
-====================================================== */
-window.deleteDelivery =
-async (id) => {
-  const yes =
-    confirm(
-      'Hapus pengantaran?'
-    )
-  if(!yes) return
-  await supabase
-  .from('deliveries')
-  .delete()
-  .eq('id', id)
-  loadDeliveries()
-}
-/* ======================================================
-   DELETE COURIER
+   DELETE
 ====================================================== */
 window.deleteCourier =
 async (id) => {
@@ -905,14 +799,11 @@ async (id) => {
   .eq('id', id)
   loadCouriers()
 }
-/* ======================================================
-   DELETE ZONE
-====================================================== */
 window.deleteZone =
 async (id) => {
   const yes =
     confirm(
-      'Hapus wilayah?'
+      'Hapus ongkir?'
     )
   if(!yes) return
   await supabase
@@ -920,6 +811,20 @@ async (id) => {
   .delete()
   .eq('id', id)
   loadZones()
+}
+window.deleteDelivery =
+async (id) => {
+  const yes =
+    confirm(
+      'Hapus pengantaran?'
+    )
+  if(!yes) return
+  await supabase
+  .from('deliveries')
+  .delete()
+  .eq('id', id)
+  loadDeliveries()
+  loadAnalytics()
 }
 /* ======================================================
    TOGGLE COURIER
@@ -929,57 +834,104 @@ async (id, current) => {
   await supabase
   .from('couriers')
   .update({
-    is_online:
-      !current,
-    last_online_at:
-      new Date().toISOString()
+    is_online: !current
   })
   .eq('id', id)
   loadCouriers()
+  loadAnalytics()
 }
 /* ======================================================
-   FILTER
+   EDIT ZONE
 ====================================================== */
-searchInput?.addEventListener(
-  'input',
-  () => {
-    currentPage = 1
-    loadDeliveries()
-})
-startDate?.addEventListener(
-  'change',
-  () => {
-    loadDeliveries()
-})
-endDate?.addEventListener(
-  'change',
-  () => {
-    loadDeliveries()
-})
+window.editZone =
+async (
+  id,
+  kecamatan,
+  kelurahan,
+  ongkir
+) => {
+  const newOngkir =
+    prompt(
+      `Edit ongkir ${kelurahan}`,
+      ongkir
+    )
+  if(!newOngkir) return
+  await supabase
+  .from('delivery_zones')
+  .update({
+    ongkir:
+      newOngkir
+  })
+  .eq('id', id)
+  loadZones()
+}
 /* ======================================================
-   PAGINATION
+   EDIT DELIVERY
+====================================================== */
+window.editDelivery =
+async (id) => {
+  const status =
+    prompt(
+      'pending / on_delivery / completed'
+    )
+  if(!status) return
+  await supabase
+  .from('deliveries')
+  .update({
+    status
+  })
+  .eq('id', id)
+  loadDeliveries()
+  loadAnalytics()
+}
+/* ======================================================
+   SEARCH
 ====================================================== */
 document
 .getElementById(
-  'next-page'
+  'search-input'
 )
 ?.addEventListener(
-  'click',
-  () => {
-    currentPage++
-    loadDeliveries()
-})
-document
-.getElementById(
-  'prev-page'
-)
-?.addEventListener(
-  'click',
-  () => {
-    if(currentPage > 1) {
-      currentPage--
-      loadDeliveries()
-    }
+  'input',
+  async (e) => {
+  const keyword =
+    e.target.value
+  const {
+    data
+  } = await supabase
+  .from('deliveries')
+  .select('*')
+  .ilike(
+    'patient_name',
+    `%${keyword}%`
+  )
+  deliveryTable.innerHTML = ''
+  data.forEach((item) => {
+    deliveryTable.innerHTML += `
+      <tr class="border-b">
+        <td class="px-6 py-5">
+          ${item.patient_name}
+        </td>
+        <td class="px-6 py-5">
+          ${item.kelurahan}
+        </td>
+        <td class="px-6 py-5">
+          ${item.courier_name || '-'}
+        </td>
+        <td class="px-6 py-5">
+          ${item.status}
+        </td>
+        <td class="px-6 py-5">
+          Rp ${parseInt(
+            item.ongkir || 0
+          ).toLocaleString()}
+        </td>
+        <td class="px-6 py-5">
+          -
+        </td>
+      </tr>
+    `
+  })
 })
 /* ======================================================
    LOGOUT
@@ -1000,4 +952,5 @@ document
 /* ======================================================
    INITIAL
 ====================================================== */
+loadAnalytics()
 loadDeliveries()
