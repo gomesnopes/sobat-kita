@@ -130,10 +130,9 @@ function openSection(
       'block'
     endDate.style.display =
       'block'
-    document
-    .querySelector(
-      '.grid.grid-cols-1.md\\:grid-cols-2.xl\\:grid-cols-4'
-    )
+   document.getElementById(
+  'analytics-section'
+)
     .style.display =
       'grid'
   } else {
