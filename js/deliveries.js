@@ -170,98 +170,111 @@ kelurahanSelect?.addEventListener(
    LOAD DELIVERIES
 ====================================================== */
 async function loadDeliveries() {
-  const {
-    data
-  } = await supabase
-  .from('deliveries')
-  .select('*')
-  .order(
-    'created_at',
-    {
-      ascending: false
+  try {
+    const {
+      data,
+      error
+    } = await supabase
+    .from('deliveries')
+    .select('*')
+    .order(
+      'created_at',
+      {
+        ascending: false
+      }
+    )
+    console.log(data)
+    if(error) {
+      console.error(error)
+      return
     }
-  )
-  deliveryTable.innerHTML = ''
-  data?.forEach((item) => {
-    let badge = `
-      <span
-        class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs"
-      >
-        Pending
-      </span>
-    `
-    if(item.status === 'on_delivery') {
-      badge = `
+    deliveryTable.innerHTML = ''
+    data?.forEach((item) => {
+      let badge = `
         <span
-          class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs"
+          class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs"
         >
-          Diantar
+          Pending
         </span>
       `
-    }
-    if(item.status === 'completed') {
-      badge = `
-        <span
-          class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs"
-        >
-          Selesai
-        </span>
+      if(item.status === 'on_delivery') {
+        badge = `
+          <span
+            class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs"
+          >
+            Diantar
+          </span>
+        `
+      }
+      if(item.status === 'completed') {
+        badge = `
+          <span
+            class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs"
+          >
+            Selesai
+          </span>
+        `
+      }
+      deliveryTable.innerHTML += `
+        <tr class="border-b">
+          <td class="px-6 py-5">
+            <p class="font-semibold">
+              ${item.patient_name || '-'}
+            </p>
+            <p class="text-sm text-slate-500 mt-1">
+              ${item.patient_phone || '-'}
+            </p>
+          </td>
+          <td class="px-6 py-5">
+            <p>
+              ${item.kelurahan || '-'}
+            </p>
+            <p class="text-sm text-slate-500 mt-1">
+              ${item.address || '-'}
+            </p>
+          </td>
+          <td class="px-6 py-5">
+            ${item.courier_name || '-'}
+          </td>
+          <td class="px-6 py-5">
+            ${badge}
+          </td>
+          <td class="px-6 py-5 font-semibold text-green-700">
+            Rp ${parseInt(
+              item.ongkir || 0
+            ).toLocaleString()}
+          </td>
+          <td class="px-6 py-5">
+            <div class="flex gap-2">
+              <button
+                onclick="showQR('${item.id}')"
+                class="bg-slate-100 px-4 py-2 rounded-xl text-sm"
+              >
+                QR
+              </button>
+              <button
+                onclick="editDelivery('${item.id}')"
+                class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm"
+              >
+                Edit
+              </button>
+              <button
+                onclick="deleteDelivery('${item.id}')"
+                class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
+              >
+                Hapus
+              </button>
+            </div>
+          </td>
+        </tr>
       `
-    }
-    deliveryTable.innerHTML += `
-      <tr class="border-b">
-        <td class="px-6 py-5">
-          <p class="font-semibold">
-            ${item.patient_name}
-          </p>
-          <p class="text-sm text-slate-500 mt-1">
-            ${item.patient_phone}
-          </p>
-        </td>
-        <td class="px-6 py-5">
-          <p>
-            ${item.kelurahan}
-          </p>
-          <p class="text-sm text-slate-500 mt-1">
-            ${item.address}
-          </p>
-        </td>
-        <td class="px-6 py-5">
-          ${item.courier_name || '-'}
-        </td>
-        <td class="px-6 py-5">
-          ${badge}
-        </td>
-        <td class="px-6 py-5 font-semibold text-green-700">
-          Rp ${parseInt(
-            item.ongkir || 0
-          ).toLocaleString()}
-        </td>
-        <td class="px-6 py-5">
-          <div class="flex gap-2">
-            <button
-              onclick="showQR('${item.id}')"
-              class="bg-slate-100 px-4 py-2 rounded-xl text-sm"
-            >
-              QR
-            </button>
-            <button
-              onclick="editDelivery('${item.id}')"
-              class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm"
-            >
-              Edit
-            </button>
-            <button
-              onclick="deleteDelivery('${item.id}')"
-              class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-sm"
-            >
-              Hapus
-            </button>
-          </div>
-        </td>
-      </tr>
-    `
-  })
+    })
+  } catch(err) {
+    console.error(
+      'LOAD DELIVERY ERROR:',
+      err
+    )
+  }
 }
 /* ======================================================
    CREATE DELIVERY
