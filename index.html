@@ -896,5 +896,84 @@
     </form>
   </div>
 </div>
+
+  <!-- ===================================================== -->
+<!-- EDIT ONGKIR MODAL -->
+<!-- ===================================================== -->
+<div
+  id="edit-zone-modal"
+  class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-5"
+>
+  <div
+    class="bg-white rounded-3xl w-full max-w-xl p-8 relative"
+  >
+    <!-- CLOSE -->
+    <button
+      id="close-edit-zone-modal"
+      class="absolute top-5 right-5 text-2xl"
+    >
+      ✕
+    </button>
+    <!-- TITLE -->
+    <h2 class="text-2xl font-bold mb-6">
+      Edit Ongkir
+    </h2>
+    <!-- FORM -->
+    <form
+      id="edit-zone-form"
+      class="space-y-5"
+    >
+      <input
+        type="hidden"
+        id="edit-zone-id"
+      >
+      <!-- KECAMATAN -->
+      <select
+        id="edit-zone-kecamatan"
+        required
+        class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+      >
+        <option value="Ternate Selatan">
+          Ternate Selatan
+        </option>
+        <option value="Ternate Tengah">
+          Ternate Tengah
+        </option>
+        <option value="Ternate Utara">
+          Ternate Utara
+        </option>
+        <option value="Pulau Ternate">
+          Pulau Ternate
+        </option>
+        <option value="Ternate Barat">
+          Ternate Barat
+        </option>
+      </select>
+      <!-- KELURAHAN -->
+      <input
+        type="text"
+        id="edit-zone-kelurahan"
+        placeholder="Kelurahan"
+        required
+        class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+      >
+      <!-- ONGKIR -->
+      <input
+        type="number"
+        id="edit-zone-ongkir"
+        placeholder="Ongkir"
+        required
+        class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
+      >
+      <!-- SUBMIT -->
+      <button
+        type="submit"
+        class="w-full bg-green-700 hover:bg-green-800 text-white py-4 rounded-2xl font-semibold"
+      >
+        Update Ongkir
+      </button>
+    </form>
+  </div>
+</div>
 </body>
 </html>
