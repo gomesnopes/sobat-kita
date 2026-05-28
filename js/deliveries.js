@@ -332,9 +332,40 @@ deliveryForm?.addEventListener(
     alert(error.message)
     return
   }
-  alert(
-    'Pengantaran berhasil dibuat'
+  /* ======================================================
+   SUCCESS
+====================================================== */
+deliveryForm.reset()
+deliveryModal
+.classList.remove(
+  'flex'
+)
+deliveryModal
+.classList.add(
+  'hidden'
+)
+/* ======================================================
+   LOAD DATA
+====================================================== */
+loadDeliveries()
+/* ======================================================
+   AUTO OPEN QR
+====================================================== */
+const {
+  data: latestDelivery
+} = await supabase
+.from('deliveries')
+.select('*')
+.eq(
+  'qr_token',
+  qr_token
+)
+.single()
+if(latestDelivery) {
+  showQR(
+    latestDelivery.id
   )
+}
   deliveryForm.reset()
   deliveryModal
   .classList.remove(
