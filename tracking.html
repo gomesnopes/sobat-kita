@@ -16,181 +16,217 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   >
+  <!-- LEAFLET -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+  <script
+    src="https://unpkg.com/leaflet/dist/leaflet.js"
+  ></script>
   <style>
     body {
       font-family: 'Inter', sans-serif;
+      background: #f1f5f9;
     }
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen">
-  <div class="max-w-2xl mx-auto p-6">
+<body class="min-h-screen">
+  <div class="max-w-2xl mx-auto p-5">
     <!-- HEADER -->
     <div
-      class="bg-green-700 text-white rounded-3xl p-8 mb-6"
+      class="bg-green-700 text-white rounded-3xl p-6"
     >
       <h1 class="text-3xl font-bold">
         Sobat Kita
       </h1>
       <p class="mt-2 text-green-100">
-        Tracking Pengantaran Obat
+        Tracking Pengantaran
       </p>
     </div>
     <!-- CARD -->
     <div
-      id="tracking-card"
-      class="bg-white rounded-3xl shadow-sm border p-8"
+      class="bg-white rounded-3xl shadow-sm p-6 mt-6"
     >
-      <div class="animate-pulse">
-        <div class="h-5 bg-slate-200 rounded w-48 mb-4"></div>
-        <div class="h-4 bg-slate-200 rounded w-full mb-2"></div>
-        <div class="h-4 bg-slate-200 rounded w-72"></div>
+      <div class="space-y-5">
+        <div>
+          <p class="text-sm text-slate-500">
+            Nama Pasien
+          </p>
+          <h2
+            id="patient-name"
+            class="text-2xl font-bold"
+          >
+            -
+          </h2>
+        </div>
+        <div>
+          <p class="text-sm text-slate-500">
+            Status Pengantaran
+          </p>
+          <div
+            id="status-box"
+            class="mt-2"
+          ></div>
+        </div>
+        <div>
+          <p class="text-sm text-slate-500">
+            Kurir
+          </p>
+          <h3
+            id="courier-name"
+            class="text-xl font-semibold"
+          >
+            -
+          </h3>
+        </div>
+        <div>
+          <p class="text-sm text-slate-500">
+            Alamat
+          </p>
+          <p
+            id="address"
+            class="font-medium mt-1"
+          >
+            -
+          </p>
+        </div>
       </div>
     </div>
+    <!-- MAP -->
+    <div
+      id="map"
+      class="w-full h-[400px] rounded-3xl mt-6 overflow-hidden"
+    ></div>
   </div>
   <!-- SUPABASE -->
   <script type="module">
     import { supabase }
     from './assets/js/supabase.js'
-    const params =
+    // URL PARAM
+    const urlParams =
       new URLSearchParams(
         window.location.search
       )
     const token =
-      params.get('token')
-    const card =
-      document.getElementById(
-        'tracking-card'
+      urlParams.get('token')
+    // MAP
+    const map =
+      L.map('map')
+      .setView(
+        [-0.7893, 127.3779],
+        13
       )
+    L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        attribution:
+          '&copy; OpenStreetMap'
+      }
+    ).addTo(map)
+    let courierMarker = null
+    // LOAD TRACKING
     async function loadTracking() {
-      const { data, error } =
-        await supabase
-        .from('deliveries')
-        .select('*')
-        .eq('qr_token', token)
-        .single()
-      if(error || !data) {
-        card.innerHTML = `
-          <div class="text-center py-10">
-            <h2 class="text-2xl font-bold text-red-600">
-              Data Tidak Ditemukan
-            </h2>
-          </div>
-        `
+      if(!token) {
+        alert(
+          'Tracking tidak valid'
+        )
         return
       }
-      let statusColor =
-        'bg-slate-100 text-slate-700'
-      let statusText =
-        'Pending'
-      let progressWidth =
-        '20%'
+      const {
+        data,
+        error
+      } = await supabase
+      .from('deliveries')
+      .select('*')
+      .eq('qr_token', token)
+      .single()
+      if(error || !data) {
+        alert(
+          'Data tidak ditemukan'
+        )
+        return
+      }
+      // UI
+      document.getElementById(
+        'patient-name'
+      ).innerText =
+        data.patient_name
+      document.getElementById(
+        'courier-name'
+      ).innerText =
+        data.courier_name ||
+        'Belum Ada Kurir'
+      document.getElementById(
+        'address'
+      ).innerText =
+        data.address || '-'
+      // STATUS
+      let statusHTML = `
+        <span class="bg-slate-100 text-slate-700 px-4 py-2 rounded-full text-sm">
+          Pending
+        </span>
+      `
       if(data.status === 'on_delivery') {
-        statusColor =
-          'bg-blue-100 text-blue-700'
-        statusText =
-          'Sedang Diantar'
-        progressWidth =
-          '70%'
+        statusHTML = `
+          <span class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm">
+            Sedang Diantar
+          </span>
+        `
       }
       if(data.status === 'completed') {
-        statusColor =
-          'bg-green-100 text-green-700'
-        statusText =
-          'Selesai'
-        progressWidth =
-          '100%'
-      }
-      card.innerHTML = `
-        <div class="flex justify-between items-start mb-6">
-          <div>
-            <p class="text-sm text-slate-500">
-              Nama Pasien
-            </p>
-            <h2 class="text-3xl font-bold text-slate-800">
-              ${data.patient_name}
-            </h2>
-          </div>
-          <span
-            class="${statusColor} px-4 py-2 rounded-full text-sm font-semibold"
-          >
-            ${statusText}
+        statusHTML = `
+          <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm">
+            Selesai
           </span>
-        </div>
-        <!-- PROGRESS -->
-        <div class="mb-8">
-          <div
-            class="w-full bg-slate-200 rounded-full h-4 overflow-hidden"
-          >
-            <div
-              class="bg-green-600 h-full rounded-full transition-all duration-500"
-              style="width:${progressWidth}"
-            ></div>
-          </div>
-        </div>
-        <!-- DETAIL -->
-        <div class="space-y-5">
-          <div>
-            <p class="text-sm text-slate-500">
-              Kurir
-            </p>
-            <p class="font-semibold text-lg">
-              ${data.courier_name || '-'}
-            </p>
-          </div>
-          <div>
-            <p class="text-sm text-slate-500">
-              Kelurahan
-            </p>
-            <p class="font-semibold text-lg">
-              ${data.kelurahan}
-            </p>
-          </div>
-          <div>
-            <p class="text-sm text-slate-500">
-              Alamat
-            </p>
-            <p class="font-semibold text-lg">
-              ${data.address}
-            </p>
-          </div>
-          <div>
-            <p class="text-sm text-slate-500">
-              Ongkir
-            </p>
-            <p class="font-semibold text-lg text-green-700">
-              Rp ${parseInt(
-                data.ongkir || 0
-              ).toLocaleString()}
-            </p>
-          </div>
-          <div>
-            <p class="text-sm text-slate-500">
-              Dibuat Pada
-            </p>
-            <p class="font-semibold text-lg">
-              ${new Date(
-                data.created_at
-              ).toLocaleString()}
-            </p>
-          </div>
-        </div>
-      `
-    }
-    // REALTIME
-    supabase
-    .channel('deliveries')
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'deliveries'
-      },
-      () => {
-        loadTracking()
+        `
       }
+      document.getElementById(
+        'status-box'
+      ).innerHTML = statusHTML
+      // LOAD COURIER GPS
+      if(data.courier_id) {
+        const {
+          data: courier
+        } = await supabase
+        .from('couriers')
+        .select('*')
+        .eq(
+          'id',
+          data.courier_id
+        )
+        .single()
+        if(
+          courier &&
+          courier.latitude &&
+          courier.longitude
+        ) {
+          if(courierMarker) {
+            courierMarker.remove()
+          }
+          courierMarker = L.marker([
+            courier.latitude,
+            courier.longitude
+          ])
+          .addTo(map)
+          .bindPopup(
+            'Kurir Sobat Kita'
+          )
+          map.setView(
+            [
+              courier.latitude,
+              courier.longitude
+            ],
+            15
+          )
+        }
+      }
+    }
+    // REALTIME AUTO REFRESH
+    setInterval(
+      loadTracking,
+      10000
     )
-    .subscribe()
     loadTracking()
   </script>
 </body>
