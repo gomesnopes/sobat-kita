@@ -16,34 +16,21 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   >
-  <!-- QR -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     body {
       font-family: 'Inter', sans-serif;
       background: #f1f5f9;
     }
     .sidebar-menu.active {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.1);
-}
+      background:
+      rgba(255,255,255,0.15);
+      border:
+      1px solid rgba(255,255,255,0.1);
+    }
   </style>
 </head>
-<body class="min-h-screen overflow-hidden">
-  <!-- AUTH -->
-  <script>
-    const adminSession =
-    JSON.parse(
-      localStorage.getItem(
-        'sobatkita_admin'
-      )
-    )
-    if(!adminSession) {
-      window.location.href =
-        './login-admin.html'
-    }
-  </script>
-  <div class="flex h-screen">
+<body class="h-screen overflow-hidden">
+  <div class="flex h-full">
     <!-- SIDEBAR -->
     <aside
       class="w-72 bg-green-800 text-white flex flex-col shrink-0"
@@ -54,14 +41,14 @@
       >
         <div class="flex items-center gap-4">
           <img
-            src="./icon-192.png"
+            src="./assets/icon-192.png"
             class="w-14 h-14 object-contain"
           >
           <div>
             <h1 class="text-2xl font-bold">
               Sobat Kita
             </h1>
-            <p class="text-sm text-green-100 mt-1">
+            <p class="text-green-100 text-sm mt-1">
               Dashboard Admin
             </p>
           </div>
@@ -69,9 +56,10 @@
       </div>
       <!-- MENU -->
       <div class="flex-1 p-4 space-y-2 overflow-y-auto">
+        <!-- PENGANTARAN -->
         <button
           id="menu-deliveries"
-          class="sidebar-menu active w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition hover:bg-white/10"
+          class="sidebar-menu active w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition"
         >
           <span class="text-2xl">
             🚚
@@ -80,9 +68,10 @@
             Pengantaran
           </span>
         </button>
+        <!-- ONGKIR -->
         <button
           id="menu-zones"
-          class="sidebar-menu superadmin-only w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition hover:bg-white/10"
+          class="sidebar-menu w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition"
         >
           <span class="text-2xl">
             📍
@@ -91,9 +80,10 @@
             Master Ongkir
           </span>
         </button>
+        <!-- KURIR -->
         <button
           id="menu-couriers"
-          class="sidebar-menu superadmin-only w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition hover:bg-white/10"
+          class="sidebar-menu w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition"
         >
           <span class="text-2xl">
             🛵
@@ -108,7 +98,6 @@
         class="p-4 border-t border-white/10"
       >
         <button
-          id="logout-btn"
           class="w-full bg-red-500 hover:bg-red-600 transition py-4 rounded-2xl font-semibold"
         >
           Logout
@@ -116,7 +105,7 @@
       </div>
     </aside>
     <!-- MAIN -->
-    <main class="flex-1 overflow-y-auto bg-slate-100">
+    <main class="flex-1 overflow-y-auto">
       <!-- HEADER -->
       <div
         class="bg-white border-b sticky top-0 z-20"
@@ -137,17 +126,20 @@
             <div
               class="flex flex-col md:flex-row gap-3"
             >
+              <!-- SEARCH -->
               <input
                 type="text"
                 id="search-input"
                 placeholder="Cari pasien..."
                 class="bg-slate-100 rounded-2xl px-5 py-4 outline-none"
               >
+              <!-- START DATE -->
               <input
                 type="date"
                 id="start-date"
                 class="bg-slate-100 rounded-2xl px-5 py-4 outline-none"
               >
+              <!-- END DATE -->
               <input
                 type="date"
                 id="end-date"
@@ -160,9 +152,11 @@
       <!-- CONTENT -->
       <div class="p-8">
         <!-- ANALYTICS -->
-       <div
-  class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8"
->
+        <div
+          id="analytics-section"
+          class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8"
+        >
+          <!-- TOTAL -->
           <div
             class="bg-white rounded-3xl p-6 shadow-sm"
           >
@@ -176,6 +170,7 @@
               0
             </h2>
           </div>
+          <!-- ON DELIVERY -->
           <div
             class="bg-white rounded-3xl p-6 shadow-sm"
           >
@@ -189,6 +184,7 @@
               0
             </h2>
           </div>
+          <!-- COMPLETED -->
           <div
             class="bg-white rounded-3xl p-6 shadow-sm"
           >
@@ -202,6 +198,7 @@
               0
             </h2>
           </div>
+          <!-- ONLINE -->
           <div
             class="bg-white rounded-3xl p-6 shadow-sm"
           >
@@ -216,7 +213,9 @@
             </h2>
           </div>
         </div>
+        <!-- ===================================================== -->
         <!-- DELIVERY SECTION -->
+        <!-- ===================================================== -->
         <section id="deliveries-section">
           <div
             class="flex items-center justify-between mb-6"
@@ -230,7 +229,6 @@
               </p>
             </div>
             <button
-              id="btn-new-delivery"
               class="bg-green-700 hover:bg-green-800 text-white px-6 py-4 rounded-2xl font-semibold transition"
             >
               + Pengantaran Baru
@@ -263,14 +261,49 @@
                     </th>
                   </tr>
                 </thead>
-                <tbody
-                  id="delivery-table-body"
-                ></tbody>
+                <tbody>
+                  <tr class="border-b">
+                    <td class="px-6 py-5">
+                      <p class="font-semibold">
+                        Contoh Pasien
+                      </p>
+                      <p class="text-sm text-slate-500 mt-1">
+                        082xxxxxxxx
+                      </p>
+                    </td>
+                    <td class="px-6 py-5">
+                      <p>
+                        Ternate Selatan
+                      </p>
+                      <p class="text-sm text-slate-500 mt-1">
+                        Jl. Contoh Alamat
+                      </p>
+                    </td>
+                    <td class="px-6 py-5">
+                      Kurir 1
+                    </td>
+                    <td class="px-6 py-5">
+                      <span
+                        class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs"
+                      >
+                        Diantar
+                      </span>
+                    </td>
+                    <td class="px-6 py-5 font-semibold text-green-700">
+                      Rp 10.000
+                    </td>
+                    <td class="px-6 py-5">
+                      -
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>
         </section>
-        <!-- ZONES SECTION -->
+        <!-- ===================================================== -->
+        <!-- ONGKIR SECTION -->
+        <!-- ===================================================== -->
         <section
           id="zones-section"
           class="hidden"
@@ -282,46 +315,36 @@
               <h2 class="text-2xl font-bold">
                 Master Ongkir
               </h2>
-              <div class="mt-4">
-
-  <select
-    id="zone-filter"
-    class="bg-slate-100 rounded-2xl px-5 py-3 outline-none"
-  >
-
-    <option value="">
-      Semua Kecamatan
-    </option>
-
-    <option value="Ternate Selatan">
-      Ternate Selatan
-    </option>
-
-    <option value="Ternate Tengah">
-      Ternate Tengah
-    </option>
-
-    <option value="Ternate Utara">
-      Ternate Utara
-    </option>
-
-    <option value="Pulau Ternate">
-      Pulau Ternate
-    </option>
-
-    <option value="Ternate Barat">
-      Ternate Barat
-    </option>
-
-  </select>
-
-</div>
               <p class="text-slate-500 mt-1">
                 Kelola ongkir pengantaran
               </p>
+              <!-- FILTER -->
+              <div class="mt-4">
+                <select
+                  class="bg-slate-100 rounded-2xl px-5 py-3 outline-none"
+                >
+                  <option>
+                    Semua Kecamatan
+                  </option>
+                  <option>
+                    Ternate Selatan
+                  </option>
+                  <option>
+                    Ternate Tengah
+                  </option>
+                  <option>
+                    Ternate Utara
+                  </option>
+                  <option>
+                    Pulau Ternate
+                  </option>
+                  <option>
+                    Ternate Barat
+                  </option>
+                </select>
+              </div>
             </div>
             <button
-              id="btn-add-zone"
               class="bg-green-700 text-white px-6 py-4 rounded-2xl font-semibold"
             >
               + Tambah Ongkir
@@ -347,13 +370,28 @@
                   </th>
                 </tr>
               </thead>
-              <tbody
-                id="zones-table-body"
-              ></tbody>
+              <tbody>
+                <tr class="border-b">
+                  <td class="px-6 py-5">
+                    Ternate Selatan
+                  </td>
+                  <td class="px-6 py-5">
+                    Mangga Dua
+                  </td>
+                  <td class="px-6 py-5 font-semibold text-green-700">
+                    Rp 10.000
+                  </td>
+                  <td class="px-6 py-5">
+                    -
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </section>
+        <!-- ===================================================== -->
         <!-- COURIERS SECTION -->
+        <!-- ===================================================== -->
         <section
           id="couriers-section"
           class="hidden"
@@ -370,7 +408,6 @@
               </p>
             </div>
             <button
-              id="btn-add-courier"
               class="bg-green-700 text-white px-6 py-4 rounded-2xl font-semibold"
             >
               + Tambah Kurir
@@ -386,7 +423,7 @@
                     Nama
                   </th>
                   <th class="px-6 py-5 text-left">
-                    Email
+                    Username
                   </th>
                   <th class="px-6 py-5 text-left">
                     Status
@@ -396,228 +433,36 @@
                   </th>
                 </tr>
               </thead>
-              <tbody
-                id="couriers-table-body"
-              ></tbody>
+              <tbody>
+                <tr class="border-b">
+                  <td class="px-6 py-5">
+                    Kurir 1
+                  </td>
+                  <td class="px-6 py-5">
+                    kurir1
+                  </td>
+                  <td class="px-6 py-5">
+                    <span
+                      class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs"
+                    >
+                      Online
+                    </span>
+                  </td>
+                  <td class="px-6 py-5">
+                    -
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </section>
       </div>
     </main>
   </div>
-  <!-- DELIVERY MODAL -->
-  <div
-    id="delivery-modal"
-    class="fixed inset-0 bg-black/50 hidden items-center justify-center p-5 z-50"
-  >
-    <div
-      class="bg-white rounded-3xl w-full max-w-2xl p-8 relative"
-    >
-      <button
-        class="close-modal absolute top-5 right-5 text-2xl"
-      >
-        ✕
-      </button>
-      <h2 class="text-2xl font-bold mb-6">
-        Pengantaran Baru
-      </h2>
-      <form
-        id="delivery-form"
-        class="space-y-5"
-      >
-        <input
-          type="text"
-          id="patient-name"
-          placeholder="Nama Pasien"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        >
-        <input
-          type="text"
-          id="patient-phone"
-          placeholder="No WhatsApp"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        >
-        <select
-          id="kecamatan"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        ></select>
-        <select
-          id="kelurahan"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        ></select>
-        <textarea
-          id="address"
-          rows="3"
-          placeholder="Alamat lengkap"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        ></textarea>
-        <div
-          class="bg-green-50 rounded-2xl p-5"
-        >
-          <p class="text-sm text-slate-500">
-            Ongkir
-          </p>
-          <h3
-            id="ongkir-display"
-            class="text-3xl font-bold text-green-700 mt-2"
-          >
-            Rp 0
-          </h3>
-        </div>
-        <button
-          type="submit"
-          class="w-full bg-green-700 text-white py-4 rounded-2xl font-semibold"
-        >
-          Simpan Pengantaran
-        </button>
-      </form>
-    </div>
-  </div>
-  <!-- COURIER MODAL -->
-  <div
-    id="courier-modal"
-    class="fixed inset-0 bg-black/50 hidden items-center justify-center p-5 z-50"
-  >
-    <div
-      class="bg-white rounded-3xl w-full max-w-lg p-8 relative"
-    >
-      <button
-        class="close-modal absolute top-5 right-5 text-2xl"
-      >
-        ✕
-      </button>
-      <h2 class="text-2xl font-bold mb-6">
-        Tambah Kurir
-      </h2>
-      <form
-        id="courier-form"
-        class="space-y-5"
-      >
-        <input
-          type="text"
-          id="courier-name"
-          placeholder="Nama Kurir"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        >
-        <input
-          type="email"
-          id="courier-email"
-          placeholder="Username"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        >
-        <input
-          type="password"
-          id="courier-password"
-          placeholder="No HP"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        >
-        <button
-          type="submit"
-          class="w-full bg-green-700 text-white py-4 rounded-2xl font-semibold"
-        >
-          Simpan Kurir
-        </button>
-      </form>
-    </div>
-  </div>
-  <!-- ZONE MODAL -->
-  <div
-    id="zone-modal"
-    class="fixed inset-0 bg-black/50 hidden items-center justify-center p-5 z-50"
-  >
-    <div
-      class="bg-white rounded-3xl w-full max-w-lg p-8 relative"
-    >
-      <button
-        class="close-modal absolute top-5 right-5 text-2xl"
-      >
-        ✕
-      </button>
-      <h2 class="text-2xl font-bold mb-6">
-        Tambah Ongkir
-      </h2>
-      <form
-        id="zone-form"
-        class="space-y-5"
-      >
-        <select
-          id="zone-kecamatan"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        >
-          <option value="">
-            Pilih Kecamatan
-          </option>
-          <option>
-            Ternate Selatan
-          </option>
-          <option>
-            Ternate Tengah
-          </option>
-          <option>
-            Ternate Utara
-          </option>
-          <option>
-            Pulau Ternate
-          </option>
-          <option>
-            Ternate Barat
-          </option>
-        </select>
-        <input
-          type="text"
-          id="zone-kelurahan"
-          placeholder="Kelurahan"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        >
-        <input
-          type="number"
-          id="zone-ongkir"
-          placeholder="Ongkir"
-          required
-          class="w-full bg-slate-100 rounded-2xl px-5 py-4 outline-none"
-        >
-        <button
-          type="submit"
-          class="w-full bg-green-700 text-white py-4 rounded-2xl font-semibold"
-        >
-          Simpan Ongkir
-        </button>
-      </form>
-    </div>
-  </div>
-  <!-- QR MODAL -->
-  <div
-    id="qr-modal"
-    class="fixed inset-0 bg-black/50 hidden items-center justify-center p-5 z-50"
-  >
-    <div
-      class="bg-white rounded-3xl p-8 relative"
-    >
-      <button
-        class="close-modal absolute top-5 right-5 text-2xl"
-      >
-        ✕
-      </button>
-      <div
-        id="qrcode"
-        class="mt-4"
-      ></div>
-    </div>
-  </div>
-  <!-- APP -->
+  <!-- DASHBOARD JS -->
   <script
     type="module"
-    src="./assets/js/app.js"
+    src="./js/dashboard.js"
   ></script>
 </body>
 </html>
