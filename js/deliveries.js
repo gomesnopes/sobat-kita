@@ -137,6 +137,7 @@ kecamatanSelect?.addEventListener(
       Pilih Kelurahan
     </option>
   `
+  console.log(data)
   data?.forEach((item) => {
     kelurahanSelect.innerHTML += `
       <option
