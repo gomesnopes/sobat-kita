@@ -550,45 +550,7 @@ async (id) => {
   .classList.add(
     'flex'
   )
-  // DETAIL
-  document.getElementById(
-    'qr-detail'
-  ).innerHTML = `
-    <div>
-      <b>Pasien:</b>
-      ${data.patient_name}
-    </div>
-    <div>
-      <b>No HP:</b>
-      ${data.patient_phone}
-    </div>
-    <div>
-      <b>Kecamatan:</b>
-      ${data.kecamatan}
-    </div>
-    <div>
-      <b>Kelurahan:</b>
-      ${data.kelurahan}
-    </div>
-    <div>
-      <b>Alamat:</b>
-      ${data.address}
-    </div>
-    <div>
-      <b>Kurir:</b>
-      ${data.courier_name || '-'}
-    </div>
-    <div>
-      <b>Status:</b>
-      ${data.status}
-    </div>
-    <div>
-      <b>Ongkir:</b>
-      Rp ${parseInt(
-        data.ongkir || 0
-      ).toLocaleString()}
-    </div>
-  `
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   // QR
   const qrBox =
     document.getElementById(
