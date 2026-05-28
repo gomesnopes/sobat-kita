@@ -729,6 +729,21 @@ async function handleQRResult(qrText) {
 }
   </script>
 <script src="https://unpkg.com/html5-qrcode"></script>
+  <script>
+if(
+  'serviceWorker'
+  in navigator
+) {
+  navigator
+  .serviceWorker
+  .register('./sw.js')
+  .then(() => {
+    console.log(
+      'SW Registered'
+    )
+  })
+}
+</script>
 </body>
 
 </html>
