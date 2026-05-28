@@ -187,7 +187,38 @@ zoneForm?.addEventListener(
   loadZones()
 })
 /* ======================================================
-   EDIT
+   EDIT MODAL ELEMENT
+====================================================== */
+const editZoneModal =
+document.getElementById(
+  'edit-zone-modal'
+)
+const closeEditZoneModal =
+document.getElementById(
+  'close-edit-zone-modal'
+)
+const editZoneForm =
+document.getElementById(
+  'edit-zone-form'
+)
+/* ======================================================
+   CLOSE EDIT MODAL
+====================================================== */
+closeEditZoneModal
+?.addEventListener(
+  'click',
+  () => {
+  editZoneModal
+  .classList.remove(
+    'flex'
+  )
+  editZoneModal
+  .classList.add(
+    'hidden'
+  )
+})
+/* ======================================================
+   OPEN EDIT
 ====================================================== */
 window.editZone =
 async (id) => {
@@ -199,19 +230,59 @@ async (id) => {
   .eq('id', id)
   .single()
   if(!data) return
-  const newOngkir =
-    prompt(
-      'Edit Ongkir',
-      data.ongkir
-    )
-  if(!newOngkir) return
+  document.getElementById(
+    'edit-zone-id'
+  ).value = data.id
+  document.getElementById(
+    'edit-zone-kecamatan'
+  ).value = data.kecamatan
+  document.getElementById(
+    'edit-zone-kelurahan'
+  ).value = data.kelurahan
+  document.getElementById(
+    'edit-zone-ongkir'
+  ).value = data.ongkir
+  editZoneModal
+  .classList.remove(
+    'hidden'
+  )
+  editZoneModal
+  .classList.add(
+    'flex'
+  )
+}
+/* ======================================================
+   UPDATE ONGKIR
+====================================================== */
+editZoneForm
+?.addEventListener(
+  'submit',
+  async (e) => {
+  e.preventDefault()
+  const id =
+    document.getElementById(
+      'edit-zone-id'
+    ).value
+  const kecamatan =
+    document.getElementById(
+      'edit-zone-kecamatan'
+    ).value
+  const kelurahan =
+    document.getElementById(
+      'edit-zone-kelurahan'
+    ).value
+  const ongkir =
+    document.getElementById(
+      'edit-zone-ongkir'
+    ).value
   const {
     error
   } = await supabase
   .from('delivery_zones')
   .update({
-    ongkir:
-      newOngkir
+    kecamatan,
+    kelurahan,
+    ongkir
   })
   .eq('id', id)
   if(error) {
@@ -221,8 +292,16 @@ async (id) => {
   alert(
     'Ongkir berhasil diupdate'
   )
+  editZoneModal
+  .classList.remove(
+    'flex'
+  )
+  editZoneModal
+  .classList.add(
+    'hidden'
+  )
   loadZones()
-}
+})
 /* ======================================================
    DELETE
 ====================================================== */
