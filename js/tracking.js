@@ -15,15 +15,139 @@ new URLSearchParams(
 const token =
 params.get('token')
 
+const courierId =
+localStorage.getItem(
+  'courier_id'
+)
+
+
 async function loadTracking() {
 
   if(!token) {
+
+let actionButton = ''
+
+if(
+  courierId &&
+  data.status === 'pending'
+) {
+
+  actionButton = `
+    <button
+      id="btn-pickup"
+      class="w-full bg-blue-600 text-white py-4 rounded-2xl mt-8"
+    >
+      Ambil Obat
+    </button>
+  `
+}
+
+if(
+  courierId &&
+  data.status === 'on_delivery'
+) {
+
+  actionButton = `
+    <button
+      id="btn-complete"
+      class="w-full bg-green-700 text-white py-4 rounded-2xl mt-8"
+    >
+      Selesaikan Pengantaran
+    </button>
+  `
+}
+
 
     content.innerHTML = `
       <div class="text-center text-red-500">
         Token tidak ditemukan
       </div>
     `
+
+const pickupBtn =
+document.getElementById(
+  'btn-pickup'
+)
+
+const completeBtn =
+document.getElementById(
+  'btn-complete'
+)
+
+pickupBtn
+?.addEventListener(
+  'click',
+  async () => {
+
+    const yes =
+    confirm(
+      'Ambil obat sekarang?'
+    )
+
+    if(!yes) return
+
+    await supabase
+
+    .from('deliveries')
+
+    .update({
+
+      status:
+      'on_delivery',
+
+      pickup_at:
+      new Date()
+      .toISOString()
+
+    })
+
+    .eq(
+      'id',
+      data.id
+    )
+
+    location.reload()
+  }
+)
+
+
+
+completeBtn
+?.addEventListener(
+  'click',
+  async () => {
+
+    const yes =
+    confirm(
+      'Selesaikan pengantaran?'
+    )
+
+    if(!yes) return
+
+    await supabase
+
+    .from('deliveries')
+
+    .update({
+
+      status:
+      'completed',
+
+      completed_at:
+      new Date()
+      .toISOString()
+
+    })
+
+    .eq(
+      'id',
+      data.id
+    )
+
+    location.reload()
+  }
+)
+
 
     return
   }
@@ -201,8 +325,14 @@ async function loadTracking() {
 
       </div>
 
-    </div>
-  `
+
+</div>
+
+${actionButton}
+
+`
+
+
 }
 
 loadTracking()
