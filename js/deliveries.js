@@ -584,7 +584,7 @@ async (id) => {
     qrBox,
     {
       text:
-`${window.location.origin}/tracking.html?token=${data.qr_token}`,
+`${window.location.origin}/sobat-kita/tracking.html?token=${data.qr_token}`,
       width: 220,
       height: 220
     }
