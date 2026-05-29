@@ -37,6 +37,24 @@ document.getElementById(
   'toggle-online'
 )
 
+const scannerModal =
+document.getElementById(
+  'scanner-modal'
+)
+
+const btnOpenScanner =
+document.getElementById(
+  'btn-open-scanner'
+)
+
+const closeScanner =
+document.getElementById(
+  'close-scanner'
+)
+
+let html5QrCode
+
+
 /* LOGIN */
 
 btnLogin?.addEventListener(
@@ -86,6 +104,82 @@ btnLogin?.addEventListener(
       'courier_id',
       data.id
     )
+
+/* QR SCANNER */
+
+btnOpenScanner
+?.addEventListener(
+  'click',
+  () => {
+
+    scannerModal
+    .classList.remove(
+      'hidden'
+    )
+
+    scannerModal
+    .classList.add(
+      'flex'
+    )
+
+    html5QrCode =
+    new Html5Qrcode(
+      'reader'
+    )
+
+    html5QrCode.start(
+
+      {
+        facingMode:
+        'environment'
+      },
+
+      {
+        fps: 10,
+        qrbox: 250
+      },
+
+      (decodedText) => {
+
+        html5QrCode.stop()
+
+        window.location.href =
+        decodedText
+      }
+
+    )
+  }
+)
+
+closeScanner
+?.addEventListener(
+  'click',
+  async () => {
+
+    try {
+
+      if(html5QrCode) {
+
+        await html5QrCode.stop()
+      }
+
+    } catch(err) {
+
+      console.log(err)
+    }
+
+    scannerModal
+    .classList.remove(
+      'flex'
+    )
+
+    scannerModal
+    .classList.add(
+      'hidden'
+    )
+  }
+)
+
 
     loadCourier()
   }
