@@ -575,21 +575,7 @@ async (id) => {
     </div>
   `
   // QR
-  const qrBox =
-    document.getElementById(
-      'qrcode'
-    )
-  qrBox.innerHTML = ''
-  new QRCode(
-    qrBox,
-    {
-      text:
-`${window.location.origin}/sobat-kita/tracking.html?token=${data.qr_token}`,
-      width: 220,
-      height: 220
-    }
-  )
-}
+document.getElementById( 'qrcode' ).innerHTML = '' const trackingUrl = `${window.location.origin}${ window.location.pathname.includes('/sobat-kita') ? '/sobat-kita' : '' }/tracking.html?token=${data.qr_token}` new QRCode( document.getElementById( 'qrcode' ), { text: trackingUrl, width: 220, height: 220 } )
 /* ======================================================
    PRINT
 ====================================================== */
