@@ -325,14 +325,11 @@ const {
     address,
     ongkir,
     qr_token,
-    status:
-      courier
-      ? 'on_delivery'
-      : 'pending',
-      courier_id:
-      courier?.id || null
-    courier_name:
-      courier?.nama || null
+    courier_id:
+  courier?.id || null,
+
+courier_name:
+  courier?.nama || null
        
   }
 ])
