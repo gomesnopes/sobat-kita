@@ -95,6 +95,45 @@
         class="space-y-4"
       ></div>
 
+<button
+  id="btn-open-scanner"
+  class="fixed bottom-6 right-6 bg-green-700 text-white px-6 py-4 rounded-full shadow-xl"
+>
+  📷 Scan QR
+</button>
+
+<div
+  id="scanner-modal"
+  class="hidden fixed inset-0 bg-black/60 items-center justify-center z-50"
+>
+
+  <div
+    class="bg-white p-4 rounded-3xl w-full max-w-md mx-4"
+  >
+
+    <div class="flex justify-between mb-4">
+
+      <h3 class="font-bold">
+        Scan QR Pengantaran
+      </h3>
+
+      <button
+        id="close-scanner"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <div
+      id="reader"
+    ></div>
+
+  </div>
+
+</div>
+
+
     </div>
 
   </div>
