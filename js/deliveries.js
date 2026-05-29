@@ -574,14 +574,16 @@ async (id) => {
       ).toLocaleString()}
     </div>
   `
-  // QR
+ 
+/* ======================================================
+   QR CODE
+====================================================== */
 
 document.getElementById(
   'qrcode'
 ).innerHTML = ''
 
 const trackingUrl =
-
 `${window.location.origin}${
   window.location.pathname.includes('/sobat-kita')
     ? '/sobat-kita'
