@@ -155,7 +155,7 @@ courierForm?.addEventListener(
     document.getElementById(
       'courier-username'
     ).value
-  const no_hp =
+  const phone =
     document.getElementById(
       'courier-phone'
     ).value
@@ -171,7 +171,7 @@ courierForm?.addEventListener(
     {
       nama,
       username,
-      no_hp,
+      phone,
       password,
       is_online: false
     }
@@ -266,7 +266,7 @@ async (id) => {
   ).value = data.username
   document.getElementById(
     'edit-courier-phone'
-  ).value = data.no_hp
+  ).value = data.phone
   document.getElementById(
     'edit-courier-status'
   ).value =
@@ -302,7 +302,7 @@ editCourierForm
     document.getElementById(
       'edit-courier-username'
     ).value
-  const no_hp =
+  const phone =
     document.getElementById(
       'edit-courier-phone'
     ).value
@@ -317,7 +317,7 @@ editCourierForm
   const payload = {
     nama,
     username,
-    no_hp,
+    phone,
     is_online
   }
   if(password) {
