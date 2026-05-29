@@ -1,209 +1,65 @@
-```javascript
-import { supabase }
-from './supabase.js'
 
-const content =
-document.getElementById(
-  'tracking-content'
-)
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-const params =
-new URLSearchParams(
-  window.location.search
-)
+  <title>
+    Tracking Pengantaran
+  </title>
 
-const token =
-params.get('token')
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-async function loadTracking() {
+<body class="bg-slate-100">
 
-  if(!token) {
-
-    content.innerHTML = `
-      <div class="text-center text-red-500">
-        Token tidak ditemukan
-      </div>
-    `
-
-    return
-  }
-
-  const {
-    data,
-    error
-  } = await supabase
-
-  .from('deliveries')
-
-  .select('*')
-
-  .eq(
-    'qr_token',
-    token
-  )
-
-  .single()
-
-  if(error || !data) {
-
-    content.innerHTML = `
-      <div class="text-center text-red-500">
-        Data tidak ditemukan
-      </div>
-    `
-
-    return
-  }
-
-  let badge =
-  `
-    <span
-      class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm"
-    >
-      Pending
-    </span>
-  `
-
-  let progress = 33
-
-  if(data.status === 'on_delivery') {
-
-    badge =
-    `
-      <span
-        class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm"
-      >
-        Sedang Diantar
-      </span>
-    `
-
-    progress = 66
-  }
-
-  if(data.status === 'completed') {
-
-    badge =
-    `
-      <span
-        class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm"
-      >
-        Selesai
-      </span>
-    `
-
-    progress = 100
-  }
-
-  content.innerHTML = `
-
-    <div class="text-center">
-
-      ${badge}
-
-    </div>
+  <div
+    class="max-w-xl mx-auto p-5"
+  >
 
     <div
-      class="w-full bg-slate-200 rounded-full h-3 mt-6 overflow-hidden"
+      class="bg-white rounded-3xl shadow-lg p-6"
     >
+
+      <div class="text-center">
+
+        <img
+          src="./assets/icon-192.png"
+          class="w-20 h-20 mx-auto mb-3"
+        >
+
+        <h1 class="text-2xl font-bold">
+          SOBAT KITA
+        </h1>
+
+        <p class="text-slate-500">
+          Tracking Pengantaran
+        </p>
+
+      </div>
 
       <div
-        class="bg-green-600 h-full"
-        style="width:${progress}%"
-      ></div>
+        id="tracking-content"
+        class="mt-8"
+      >
 
-    </div>
-
-    <div
-      class="space-y-4 mt-8"
-    >
-
-      <div>
-
-        <b>Nama Pasien</b>
-
-        <p>
-          ${data.patient_name || '-'}
-        </p>
-
-      </div>
-
-      <div>
-
-        <b>No HP</b>
-
-        <p>
-          ${data.patient_phone || '-'}
-        </p>
-
-      </div>
-
-      <div>
-
-        <b>Kurir</b>
-
-        <p>
-          ${data.courier_name || '-'}
-        </p>
-
-      </div>
-
-      <div>
-
-        <b>Kecamatan</b>
-
-        <p>
-          ${data.kecamatan || '-'}
-        </p>
-
-      </div>
-
-      <div>
-
-        <b>Kelurahan</b>
-
-        <p>
-          ${data.kelurahan || '-'}
-        </p>
-
-      </div>
-
-      <div>
-
-        <b>Alamat</b>
-
-        <p>
-          ${data.address || '-'}
-        </p>
-
-      </div>
-
-      <div>
-
-        <b>Ongkir</b>
-
-        <p class="font-semibold text-green-700">
-          Rp ${parseInt(
-            data.ongkir || 0
-          ).toLocaleString()}
-        </p>
-
-      </div>
-
-      <div>
-
-        <b>Dibuat</b>
-
-        <p>
-          ${new Date(
-            data.created_at
-          ).toLocaleString('id-ID')}
-        </p>
+        Memuat data...
 
       </div>
 
     </div>
-  `
-}
 
-loadTracking()
-```
+  </div>
+
+  <script
+    type="module"
+    src="./js/tracking.js"
+  ></script>
+
+</body>
+</html>
+
