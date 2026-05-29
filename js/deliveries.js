@@ -590,24 +590,20 @@ const trackingUrl =
     : ''
 }/tracking.html?token=${data.qr_token}`
 
-
 new QRCode(
-
   document.getElementById(
     'qrcode'
   ),
-
   {
     text: trackingUrl,
-
     width: 220,
-
     height: 220
   }
-
 )
 
 }
+
+
 
 
 /* ======================================================
