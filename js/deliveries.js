@@ -295,17 +295,30 @@ deliveryForm?.addEventListener(
   const qr_token =
     crypto.randomUUID()
   // AUTO COURIER
-  const {
-    data: courier
-  } = await supabase
-  .from('couriers')
-  .select('*')
-  .eq(
-    'is_online',
-    true
-  )
-  .limit(1)
-  .single()
+
+const {
+  data: courier
+} = await supabase
+
+.from('couriers')
+
+.select('*')
+
+.eq(
+  'is_online',
+  true
+)
+
+.order(
+  'last_assigned_at',
+  {
+    ascending: true
+  }
+)
+
+.limit(1)
+
+.single()
 
 // INSERT
 
@@ -316,6 +329,7 @@ const {
 
 .from('deliveries')
 
+
 .insert([
   {
     patient_name,
@@ -325,14 +339,18 @@ const {
     address,
     ongkir,
     qr_token,
-    courier_id:
-  courier?.id || null,
 
-courier_name:
-  courier?.nama || null
-       
+    status: 'pending',
+
+    courier_id:
+      courier?.id || null,
+
+    courier_name:
+      courier?.nama || null
   }
 ])
+
+
 
 .select()
 
@@ -363,6 +381,25 @@ if(inserted) {
     inserted.id
   )
 }
+
+if(courier) {
+
+  await supabase
+
+  .from('couriers')
+
+  .update({
+    last_assigned_at:
+      new Date()
+      .toISOString()
+  })
+
+  .eq(
+    'id',
+    courier.id
+  )
+}
+
 
 })
 
