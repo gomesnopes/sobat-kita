@@ -1,4 +1,4 @@
-
+```javascript
 import { supabase }
 from './supabase.js'
 
@@ -20,134 +20,15 @@ localStorage.getItem(
   'courier_id'
 )
 
-
 async function loadTracking() {
 
   if(!token) {
-
-let actionButton = ''
-
-if(
-  courierId &&
-  data.status === 'pending'
-) {
-
-  actionButton = `
-    <button
-      id="btn-pickup"
-      class="w-full bg-blue-600 text-white py-4 rounded-2xl mt-8"
-    >
-      Ambil Obat
-    </button>
-  `
-}
-
-if(
-  courierId &&
-  data.status === 'on_delivery'
-) {
-
-  actionButton = `
-    <button
-      id="btn-complete"
-      class="w-full bg-green-700 text-white py-4 rounded-2xl mt-8"
-    >
-      Selesaikan Pengantaran
-    </button>
-  `
-}
-
 
     content.innerHTML = `
       <div class="text-center text-red-500">
         Token tidak ditemukan
       </div>
     `
-
-const pickupBtn =
-document.getElementById(
-  'btn-pickup'
-)
-
-const completeBtn =
-document.getElementById(
-  'btn-complete'
-)
-
-pickupBtn
-?.addEventListener(
-  'click',
-  async () => {
-
-    const yes =
-    confirm(
-      'Ambil obat sekarang?'
-    )
-
-    if(!yes) return
-
-    await supabase
-
-    .from('deliveries')
-
-    .update({
-
-      status:
-      'on_delivery',
-
-      pickup_at:
-      new Date()
-      .toISOString()
-
-    })
-
-    .eq(
-      'id',
-      data.id
-    )
-
-    location.reload()
-  }
-)
-
-
-
-completeBtn
-?.addEventListener(
-  'click',
-  async () => {
-
-    const yes =
-    confirm(
-      'Selesaikan pengantaran?'
-    )
-
-    if(!yes) return
-
-    await supabase
-
-    .from('deliveries')
-
-    .update({
-
-      status:
-      'completed',
-
-      completed_at:
-      new Date()
-      .toISOString()
-
-    })
-
-    .eq(
-      'id',
-      data.id
-    )
-
-    location.reload()
-  }
-)
-
 
     return
   }
@@ -179,8 +60,7 @@ completeBtn
     return
   }
 
-  let badge =
-  `
+  let badge = `
     <span
       class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm"
     >
@@ -190,10 +70,12 @@ completeBtn
 
   let progress = 33
 
-  if(data.status === 'on_delivery') {
+  if(
+    data.status ===
+    'on_delivery'
+  ) {
 
-    badge =
-    `
+    badge = `
       <span
         class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm"
       >
@@ -204,10 +86,12 @@ completeBtn
     progress = 66
   }
 
-  if(data.status === 'completed') {
+  if(
+    data.status ===
+    'completed'
+  ) {
 
-    badge =
-    `
+    badge = `
       <span
         class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm"
       >
@@ -216,6 +100,40 @@ completeBtn
     `
 
     progress = 100
+  }
+
+  let actionButton = ''
+
+  if(
+    courierId &&
+    data.status ===
+    'pending'
+  ) {
+
+    actionButton = `
+      <button
+        id="btn-pickup"
+        class="w-full bg-blue-600 text-white py-4 rounded-2xl mt-8 font-semibold"
+      >
+        Ambil Obat
+      </button>
+    `
+  }
+
+  if(
+    courierId &&
+    data.status ===
+    'on_delivery'
+  ) {
+
+    actionButton = `
+      <button
+        id="btn-complete"
+        class="w-full bg-green-700 text-white py-4 rounded-2xl mt-8 font-semibold"
+      >
+        Selesaikan Pengantaran
+      </button>
+    `
   }
 
   content.innerHTML = `
@@ -242,97 +160,154 @@ completeBtn
     >
 
       <div>
-
         <b>Nama Pasien</b>
-
         <p>
           ${data.patient_name || '-'}
         </p>
-
       </div>
 
       <div>
-
         <b>No HP</b>
-
         <p>
           ${data.patient_phone || '-'}
         </p>
-
       </div>
 
       <div>
-
         <b>Kurir</b>
-
         <p>
           ${data.courier_name || '-'}
         </p>
-
       </div>
 
       <div>
-
         <b>Kecamatan</b>
-
         <p>
           ${data.kecamatan || '-'}
         </p>
-
       </div>
 
       <div>
-
         <b>Kelurahan</b>
-
         <p>
           ${data.kelurahan || '-'}
         </p>
-
       </div>
 
       <div>
-
         <b>Alamat</b>
-
         <p>
           ${data.address || '-'}
         </p>
-
       </div>
 
       <div>
-
         <b>Ongkir</b>
-
         <p class="font-semibold text-green-700">
           Rp ${parseInt(
             data.ongkir || 0
           ).toLocaleString()}
         </p>
-
       </div>
 
       <div>
-
-        <b>Dibuat</b>
-
+        <b>Status</b>
         <p>
-          ${new Date(
-            data.created_at
-          ).toLocaleString('id-ID')}
+          ${data.status}
         </p>
-
       </div>
 
+    </div>
 
-</div>
+    ${actionButton}
+  `
 
-${actionButton}
+  const pickupBtn =
+  document.getElementById(
+    'btn-pickup'
+  )
 
-`
+  const completeBtn =
+  document.getElementById(
+    'btn-complete'
+  )
 
+  pickupBtn?.addEventListener(
+    'click',
+    async () => {
 
+      const yes =
+      confirm(
+        'Ambil obat sekarang?'
+      )
+
+      if(!yes) return
+
+      const {
+        error
+      } = await supabase
+
+      .from('deliveries')
+
+      .update({
+        status:
+        'on_delivery'
+      })
+
+      .eq(
+        'id',
+        data.id
+      )
+
+      if(error) {
+        alert(
+          error.message
+        )
+        return
+      }
+
+      location.reload()
+    }
+  )
+
+  completeBtn?.addEventListener(
+    'click',
+    async () => {
+
+      const yes =
+      confirm(
+        'Selesaikan pengantaran?'
+      )
+
+      if(!yes) return
+
+      const {
+        error
+      } = await supabase
+
+      .from('deliveries')
+
+      .update({
+        status:
+        'completed'
+      })
+
+      .eq(
+        'id',
+        data.id
+      )
+
+      if(error) {
+        alert(
+          error.message
+        )
+        return
+      }
+
+      location.reload()
+    }
+  )
 }
 
 loadTracking()
+```
