@@ -1,173 +1,208 @@
+
 import { supabase }
 from './supabase.js'
-/* ======================================================
-   GET TOKEN
-====================================================== */
+
+const content =
+document.getElementById(
+  'tracking-content'
+)
+
 const params =
 new URLSearchParams(
   window.location.search
 )
+
 const token =
 params.get('token')
-const container =
-document.getElementById(
-  'tracking-status'
-)
-/* ======================================================
-   LOAD TRACKING
-====================================================== */
+
 async function loadTracking() {
+
   if(!token) {
-    container.innerHTML = `
-      <div
-        class="bg-red-100 text-red-700 p-5 rounded-2xl text-center"
-      >
-        Token tracking tidak ditemukan
+
+    content.innerHTML = `
+      <div class="text-center text-red-500">
+        Token tidak ditemukan
       </div>
     `
+
     return
   }
+
   const {
     data,
     error
   } = await supabase
+
   .from('deliveries')
+
   .select('*')
+
   .eq(
     'qr_token',
     token
   )
+
   .single()
+
   if(error || !data) {
-    container.innerHTML = `
-      <div
-        class="bg-red-100 text-red-700 p-5 rounded-2xl text-center"
-      >
-        Data pengantaran tidak ditemukan
+
+    content.innerHTML = `
+      <div class="text-center text-red-500">
+        Data tidak ditemukan
       </div>
     `
+
     return
   }
-  /* ======================================================
-     STATUS BADGE
-  ====================================================== */
-  let badge = `
-    <div
-      class="bg-slate-100 text-slate-700 px-5 py-3 rounded-2xl inline-block"
+
+  let badge =
+  `
+    <span
+      class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm"
     >
       Pending
-    </div>
+    </span>
   `
+
   let progress = 33
+
   if(data.status === 'on_delivery') {
-    badge = `
-      <div
-        class="bg-blue-100 text-blue-700 px-5 py-3 rounded-2xl inline-block"
+
+    badge =
+    `
+      <span
+        class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm"
       >
         Sedang Diantar
-      </div>
+      </span>
     `
+
     progress = 66
   }
+
   if(data.status === 'completed') {
-    badge = `
-      <div
-        class="bg-green-100 text-green-700 px-5 py-3 rounded-2xl inline-block"
+
+    badge =
+    `
+      <span
+        class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm"
       >
         Selesai
-      </div>
+      </span>
     `
+
     progress = 100
   }
-  /* ======================================================
-     RENDER
-  ====================================================== */
-  container.innerHTML = `
-    <!-- STATUS -->
+
+  content.innerHTML = `
+
     <div class="text-center">
+
       ${badge}
+
     </div>
-    <!-- PROGRESS -->
-    <div class="mt-6">
-      <div
-        class="w-full bg-slate-200 rounded-full h-4 overflow-hidden"
-      >
-        <div
-          class="bg-green-600 h-full"
-          style="width:${progress}%"
-        ></div>
-      </div>
-    </div>
-    <!-- DETAIL -->
+
     <div
-      class="mt-8 space-y-4 text-sm"
+      class="w-full bg-slate-200 rounded-full h-3 mt-6 overflow-hidden"
     >
+
       <div
-        class="bg-slate-50 rounded-2xl p-5"
-      >
-        <p class="text-slate-500">
-          Nama Pasien
+        class="bg-green-600 h-full"
+        style="width:${progress}%"
+      ></div>
+
+    </div>
+
+    <div
+      class="space-y-4 mt-8"
+    >
+
+      <div>
+
+        <b>Nama Pasien</b>
+
+        <p>
+          ${data.patient_name || '-'}
         </p>
-        <h3 class="font-semibold mt-1">
-          ${data.patient_name}
-        </h3>
+
       </div>
-      <div
-        class="bg-slate-50 rounded-2xl p-5"
-      >
-        <p class="text-slate-500">
-          Kurir
+
+      <div>
+
+        <b>No HP</b>
+
+        <p>
+          ${data.patient_phone || '-'}
         </p>
-        <h3 class="font-semibold mt-1">
+
+      </div>
+
+      <div>
+
+        <b>Kurir</b>
+
+        <p>
           ${data.courier_name || '-'}
-        </h3>
-      </div>
-      <div
-        class="bg-slate-50 rounded-2xl p-5"
-      >
-        <p class="text-slate-500">
-          Kecamatan
         </p>
-        <h3 class="font-semibold mt-1">
-          ${data.kecamatan}
-        </h3>
+
       </div>
-      <div
-        class="bg-slate-50 rounded-2xl p-5"
-      >
-        <p class="text-slate-500">
-          Kelurahan
+
+      <div>
+
+        <b>Kecamatan</b>
+
+        <p>
+          ${data.kecamatan || '-'}
         </p>
-        <h3 class="font-semibold mt-1">
-          ${data.kelurahan}
-        </h3>
+
       </div>
-      <div
-        class="bg-slate-50 rounded-2xl p-5"
-      >
-        <p class="text-slate-500">
-          Alamat
+
+      <div>
+
+        <b>Kelurahan</b>
+
+        <p>
+          ${data.kelurahan || '-'}
         </p>
-        <h3 class="font-semibold mt-1">
-          ${data.address}
-        </h3>
+
       </div>
-      <div
-        class="bg-slate-50 rounded-2xl p-5"
-      >
-        <p class="text-slate-500">
-          Ongkir
+
+      <div>
+
+        <b>Alamat</b>
+
+        <p>
+          ${data.address || '-'}
         </p>
-        <h3 class="font-semibold mt-1 text-green-700">
+
+      </div>
+
+      <div>
+
+        <b>Ongkir</b>
+
+        <p class="font-semibold text-green-700">
           Rp ${parseInt(
             data.ongkir || 0
           ).toLocaleString()}
-        </h3>
+        </p>
+
       </div>
+
+      <div>
+
+        <b>Dibuat</b>
+
+        <p>
+          ${new Date(
+            data.created_at
+          ).toLocaleString('id-ID')}
+        </p>
+
+      </div>
+
     </div>
   `
 }
-/* ======================================================
-   INITIAL
-====================================================== */
+
 loadTracking()
